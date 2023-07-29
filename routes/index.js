@@ -7,7 +7,7 @@ const authController = require('../controllers/authController');
 
 //------------ Welcome Route ------------//
 router.get('/', (req, res) => {
-  res.render('login');
+  res.render('welcome');
 });
 
 //------------ Dashboard Route ------------//
@@ -16,8 +16,5 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
     fullname: req.user.fullname,
   })
 );
-
-//------------ Login POST Handle ------------//
-router.post('/login', authController.loginHandle);
 
 module.exports = router;
