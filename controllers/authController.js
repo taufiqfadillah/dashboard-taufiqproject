@@ -86,9 +86,9 @@ exports.registerHandle = (req, res) => {
 
         // send mail with defined transport object
         const mailOptions = {
-          from: '"Taufiq Project" <nodejsa@gmail.com>', // sender address
+          from: '"Taufiq Project Dashboard" <nodejsa@gmail.com>', // sender address
           to: email, // list of receivers
-          subject: 'Account Verification: NodeJS Auth ✔', // Subject line
+          subject: 'Account Verification: Taufiq Project ✔', // Subject line
           generateTextFromHTML: true,
           html: output, // html body
         };
@@ -221,9 +221,9 @@ exports.forgotPassword = (req, res) => {
 
             // send mail with defined transport object
             const mailOptions = {
-              from: '"Auth Admin" <nodejsa@gmail.com>', // sender address
+              from: '"Taufiq Project Dashboard" <nodejsa@gmail.com>', // sender address
               to: email, // list of receivers
-              subject: 'Account Password Reset: NodeJS Auth ✔', // Subject line
+              subject: 'Account Password Reset: Taufiq Project ✔', // Subject line
               html: output, // html body
             };
 
@@ -315,7 +315,7 @@ exports.resetPassword = (req, res) => {
 //------------ Login Handle ------------//
 exports.loginHandle = (req, res, next) => {
   passport.authenticate('local', {
-    successRedirect: 'https://dashboard.taufiqproject.my.id',
+    successRedirect: '/dashboard',
     failureRedirect: '/auth/login',
     failureFlash: true,
   })(req, res, next);

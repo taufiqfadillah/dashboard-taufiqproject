@@ -26,6 +26,7 @@ app.set('view engine', 'ejs');
 
 //------------ Bodyparser Configuration ------------//
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 //------------ Express session Configuration ------------//
 app.use(

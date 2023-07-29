@@ -1,3 +1,4 @@
+const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
 
@@ -16,7 +17,7 @@ module.exports = function (passport) {
         }
 
         //------------ Password Matching ------------//
-        bcrypt.compare(password, user.password, (err, isMatch) => {
+        bcrypt.compare(password, users.password, (err, isMatch) => {
           if (err) throw err;
           if (isMatch) {
             return done(null, users);
@@ -33,8 +34,8 @@ module.exports = function (passport) {
   });
 
   passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-      done(err, user);
+    User.findById(id, function (err, users) {
+      done(err, users);
     });
   });
 };
