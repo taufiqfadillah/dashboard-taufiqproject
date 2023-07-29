@@ -1,11 +1,3 @@
 {
-  "rewrites": [
-    { "source": "/assets/(.*)", "destination": "/assets/" },
-    { "source": "/config/(.*)", "destination": "/config/" },
-    { "source": "/controllers/(.*)", "destination": "/controllers/" },
-    { "source": "/models/(.*)", "destination": "/models/" },
-    { "source": "/routes/(.*)", "destination": "/routes/" },
-    { "source": "/views/(.*)", "destination": "/views/" },
-    { "source": "/(.*)", "destination": "/server.js" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/views/login.ejs" }]
 }

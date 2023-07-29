@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
+require('dotenv').config();
 
 const app = express();
 
@@ -55,6 +56,6 @@ app.use(function (req, res, next) {
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 
-const PORT = process.env.PORT || 3006;
+const PORT = process.env.PORT;
 
 app.listen(PORT, console.log(`Server running on  http://localhost:${PORT}`));
