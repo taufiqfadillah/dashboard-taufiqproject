@@ -10,6 +10,8 @@
     { "source": "/models/(.*)", "destination": "/models/$1" },
     { "source": "/routes/(.*)", "destination": "/routes/$1" },
     { "source": "/views/(.*)", "destination": "/views/$1" },
-    { "source": "/(.*)", "destination": "/server.js" }
+    { "source": "/auth/login(.*)", "destination": "server.js" },
+    { "source": "/auth/register(.*)", "destination": "server.js" },
+    { "source": "/(.*)", "destination": "/login.ejs" }
   ]
 }
