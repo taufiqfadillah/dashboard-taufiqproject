@@ -1,39 +1,68 @@
-<div class="row mt-5">
-  <div class="col-md-6 m-auto">
-    <div class="card card-body text-center">
-      <h1 class="mb-3">
-        <img src="/assets/secure-icon.png" alt="icon" width="20%" />
-      </h1>
-      <h2>
-        Register New User
-      </h2>
-      <%- include ("./messages") %>
-      <form action="/auth/register" method="POST">
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input type="name" id="name" name="name" class="form-control" placeholder="Enter Name"
-            value="<%= typeof name != 'undefined' ? name : '' %>" />
+<div class="form-wrapper">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 d-none d-lg-inline">
+        <figure class="mb-5">
+          <img class="img-fluid" src="/assets/images/sign-up.svg" alt="" />
+        </figure>
+      </div>
+      <div class="col-lg-4 offset-lg pt-4">
+        <div class="logo text-center text-lg-left">
+          <img src="/assets/images/logo.png" alt="logo" />
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" class="form-control" placeholder="Enter Email"
-            value="<%= typeof email != 'undefined' ? email : '' %>" />
+        <div class="my-5 text-center text-lg-left">
+          <h3 class="font-weight-bold mb-3">Sign Up</h3>
+          <p class="text-muted">You can create a free account now</p>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" class="form-control" placeholder="Enter Password"
-            value="<%= typeof password != 'undefined' ? password : '' %>" />
+        <div class="card">
+          <div class="card-body">
+            <%- include ("./messages") %>
+            <form action="/auth/register" method="POST">
+              <div class="form-group">
+                <label for="fullname">Fullname</label>
+                <div class="form-icon-wrapper">
+                  <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter fullname" value="<%= typeof fullname != 'undefined' ? fullname : '' %>" autofocus required />
+                  <i class="form-icon-left mdi mdi-account"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <div class="form-icon-wrapper">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="<%= typeof email != 'undefined' ? email : '' %>" required />
+                  <i class="form-icon-left mdi mdi-email"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <div class="form-icon-wrapper">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" value="<%= typeof password != 'undefined' ? password : '' %>" required />
+                  <i class="form-icon-left mdi mdi-lock"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password2">Retype password</label>
+                <div class="form-icon-wrapper">
+                  <input type="password" class="form-control" id="password2" name="password2" placeholder="Enter password" value="<%= typeof password2 != 'undefined' ? password2 : '' %>" required />
+                  <i class="form-icon-left mdi mdi-lock"></i>
+                </div>
+              </div>
+              <div class="text-center text-lg-left">
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+              </div>
+            </form>
+            <div class="text-divider">or</div>
+            <p class="text-center">Do you already have an account? <a href="/auth/login">Sign in</a>.</p>
+            <div class="social-links justify-content-center">
+              <a href="#" class="bg-google">
+                <i class="mdi mdi-google"></i>
+              </a>
+              <a href="#" class="bg-facebook">
+                <i class="mdi mdi-facebook"></i>
+              </a>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="password2">Confirm Password</label>
-          <input type="password" id="password2" name="password2" class="form-control" placeholder="Confirm Password"
-            value="<%= typeof password2 != 'undefined' ? password2 : '' %>" />
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">
-          Register
-        </button>
-      </form>
-      <p class="mt-4">Already have an account? <a href="/auth/login">Login</a></p>
+      </div>
     </div>
   </div>
 </div>
