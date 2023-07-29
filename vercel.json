@@ -1,17 +1,15 @@
 {
-  "rewrites": [
-    { "source": "/assets/css/(.*)", "destination": "/assets/css/$1" },
-    { "source": "/assets/js/(.*)", "destination": "/assets/js/$1" },
-    { "source": "/assets/images/(.*)", "destination": "/assets/images/$1" },
-    { "source": "/assets/js/(.*)", "destination": "/assets/icons/$1" },
-    { "source": "/assets/js/(.*)", "destination": "/assets/vendor/$1" },
-    { "source": "/config/(.*)", "destination": "/config/$1" },
-    { "source": "/controllers/(.*)", "destination": "/controllers/$1" },
-    { "source": "/models/(.*)", "destination": "/models/$1" },
-    { "source": "/routes/(.*)", "destination": "/routes/$1" },
-    { "source": "/views/(.*)", "destination": "/views/$1" },
-    { "source": "/auth/login(.*)", "destination": "server.js" },
-    { "source": "/auth/register(.*)", "destination": "server.js" },
-    { "source": "/(.*)", "destination": "/login.ejs" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
+    }
   ]
 }
