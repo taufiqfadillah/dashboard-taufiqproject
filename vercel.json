@@ -1,25 +1,11 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "server.js"
-    }
-  ],
   "rewrites": [
-    {
-      "source": "/:any*",
-      "destination": "/"
-    }
+    { "source": "/assets/(.*)", "destination": "/assets/" },
+    { "source": "/config/(.*)", "destination": "/config/" },
+    { "source": "/controllers/(.*)", "destination": "/controllers/" },
+    { "source": "/models/(.*)", "destination": "/models/" },
+    { "source": "/routes/(.*)", "destination": "/routes/" },
+    { "source": "/views/(.*)", "destination": "/views/" },
+    { "source": "/(.*)", "destination": "/server.js" }
   ]
 }
