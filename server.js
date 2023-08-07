@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
-require('dotenv').config();
 
 const app = express();
 
@@ -17,7 +16,7 @@ const db = require('./config/key').MongoURI;
 //------------ Mongo Connection ------------//
 mongoose
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
-  .then(() => console.log('Successfully connected to MongoDB🫡🫡🫡 '))
+  .then(() => console.log('Successfully connected to MongoDB'))
   .catch((err) => console.log(err));
 
 //------------ EJS Configuration ------------//
@@ -27,7 +26,6 @@ app.set('view engine', 'ejs');
 
 //------------ Bodyparser Configuration ------------//
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 //------------ Express session Configuration ------------//
 app.use(
@@ -58,4 +56,4 @@ app.use('/auth', require('./routes/auth'));
 
 const PORT = process.env.PORT;
 
-app.listen(PORT, console.log(`Server running on  http://localhost:${PORT}`));
+app.listen(PORT, console.log(`Server running on PORT http://localhost:${PORT}`));

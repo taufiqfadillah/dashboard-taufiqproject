@@ -12,11 +12,11 @@ const User = require('../models/User');
 
 //------------ Register Handle ------------//
 exports.registerHandle = (req, res) => {
-  const { fullname, email, password, password2 } = req.body;
+  const { name, email, password, password2 } = req.body;
   let errors = [];
 
   //------------ Checking required fields ------------//
-  if (!fullname || !email || !password || !password2) {
+  if (!name || !email || !password || !password2) {
     errors.push({ msg: 'Please enter all fields' });
   }
 
@@ -33,20 +33,20 @@ exports.registerHandle = (req, res) => {
   if (errors.length > 0) {
     res.render('register', {
       errors,
-      fullname,
+      name,
       email,
       password,
       password2,
     });
   } else {
     //------------ Validation passed ------------//
-    User.findOne({ email: email }).then((users) => {
-      if (users) {
+    User.findOne({ email: email }).then((user) => {
+      if (user) {
         //------------ User already exists ------------//
         errors.push({ msg: 'Email ID already registered' });
         res.render('register', {
           errors,
-          fullname,
+          name,
           email,
           password,
           password2,
@@ -63,7 +63,7 @@ exports.registerHandle = (req, res) => {
         });
         const accessToken = oauth2Client.getAccessToken();
 
-        const token = jwt.sign({ fullname, email, password }, JWT_KEY, { expiresIn: '30m' });
+        const token = jwt.sign({ name, email, password }, JWT_KEY, { expiresIn: '30m' });
         const CLIENT_URL = 'http://' + req.headers.host;
 
         const output = `
@@ -86,9 +86,9 @@ exports.registerHandle = (req, res) => {
 
         // send mail with defined transport object
         const mailOptions = {
-          from: '"Taufiq Project Dashboard" <nodejsa@gmail.com>', // sender address
+          from: '"Auth Admin" <nodejsa@gmail.com>', // sender address
           to: email, // list of receivers
-          subject: 'Account Verification: Taufiq Project ✔', // Subject line
+          subject: 'Account Verification: NodeJS Auth ✔', // Subject line
           generateTextFromHTML: true,
           html: output, // html body
         };
@@ -119,15 +119,15 @@ exports.activateHandle = (req, res) => {
         req.flash('error_msg', 'Incorrect or expired link! Please register again.');
         res.redirect('/auth/register');
       } else {
-        const { fullname, email, password } = decodedToken;
-        User.findOne({ email: email }).then((users) => {
-          if (users) {
+        const { name, email, password } = decodedToken;
+        User.findOne({ email: email }).then((user) => {
+          if (user) {
             //------------ User already exists ------------//
             req.flash('error_msg', 'Email ID already registered! Please log in.');
             res.redirect('/auth/login');
           } else {
             const newUser = new User({
-              fullname,
+              name,
               email,
               password,
             });
@@ -138,7 +138,7 @@ exports.activateHandle = (req, res) => {
                 newUser.password = hash;
                 newUser
                   .save()
-                  .then((users) => {
+                  .then((user) => {
                     req.flash('success_msg', 'Account activated. You can now log in.');
                     res.redirect('/auth/login');
                   })
@@ -171,8 +171,8 @@ exports.forgotPassword = (req, res) => {
       email,
     });
   } else {
-    User.findOne({ email: email }).then((users) => {
-      if (!users) {
+    User.findOne({ email: email }).then((user) => {
+      if (!user) {
         //------------ User already exists ------------//
         errors.push({ msg: 'User with Email ID does not exist!' });
         res.render('forgot', {
@@ -191,7 +191,7 @@ exports.forgotPassword = (req, res) => {
         });
         const accessToken = oauth2Client.getAccessToken();
 
-        const token = jwt.sign({ _id: users._id }, JWT_RESET_KEY, { expiresIn: '30m' });
+        const token = jwt.sign({ _id: user._id }, JWT_RESET_KEY, { expiresIn: '30m' });
         const CLIENT_URL = 'http://' + req.headers.host;
         const output = `
                 <h2>Please click on below link to reset your account password</h2>
@@ -221,9 +221,9 @@ exports.forgotPassword = (req, res) => {
 
             // send mail with defined transport object
             const mailOptions = {
-              from: '"Taufiq Project Dashboard" <nodejsa@gmail.com>', // sender address
+              from: '"Auth Admin" <nodejsa@gmail.com>', // sender address
               to: email, // list of receivers
-              subject: 'Account Password Reset: Taufiq Project ✔', // Subject line
+              subject: 'Account Password Reset: NodeJS Auth ✔', // Subject line
               html: output, // html body
             };
 
@@ -256,7 +256,7 @@ exports.gotoReset = (req, res) => {
         res.redirect('/auth/login');
       } else {
         const { _id } = decodedToken;
-        User.findById(_id, (err, users) => {
+        User.findById(_id, (err, user) => {
           if (err) {
             req.flash('error_msg', 'User with email ID does not exist! Please try again.');
             res.redirect('/auth/login');

@@ -19,9 +19,9 @@
             <%- include ("./messages") %>
             <form action="/auth/register" method="POST">
               <div class="form-group">
-                <label for="fullname">Fullname</label>
+                <label for="name">Fullname</label>
                 <div class="form-icon-wrapper">
-                  <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter fullname" value="<%= typeof fullname != 'undefined' ? fullname : '' %>" autofocus required />
+                  <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" value="<%= typeof name != 'undefined' ? name : '' %>" autofocus required />
                   <i class="form-icon-left mdi mdi-account"></i>
                 </div>
               </div>

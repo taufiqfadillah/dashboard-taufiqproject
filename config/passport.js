@@ -10,16 +10,16 @@ module.exports = function (passport) {
       //------------ User Matching ------------//
       User.findOne({
         email: email,
-      }).then((users) => {
-        if (!users) {
+      }).then((user) => {
+        if (!user) {
           return done(null, false, { message: 'This email ID is not registered' });
         }
 
         //------------ Password Matching ------------//
-        bcrypt.compare(password, users.password, (err, isMatch) => {
+        bcrypt.compare(password, user.password, (err, isMatch) => {
           if (err) throw err;
           if (isMatch) {
-            return done(null, users);
+            return done(null, user);
           } else {
             return done(null, false, { message: 'Password incorrect! Please try again.' });
           }
@@ -28,13 +28,13 @@ module.exports = function (passport) {
     })
   );
 
-  passport.serializeUser(function (users, done) {
-    done(null, users.id);
+  passport.serializeUser(function (user, done) {
+    done(null, user.id);
   });
 
   passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, users) {
-      done(err, users);
+    User.findById(id, function (err, user) {
+      done(err, user);
     });
   });
 };
