@@ -4,8 +4,10 @@ const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
+const bodyParser = require('body-parser');
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 
 //------------ Passport Configuration ------------//
 require('./config/passport')(passport);

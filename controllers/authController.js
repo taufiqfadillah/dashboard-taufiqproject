@@ -315,7 +315,7 @@ exports.resetPassword = (req, res) => {
 //------------ Login Handle ------------//
 exports.loginHandle = (req, res, next) => {
   passport.authenticate('local', {
-    successRedirect: '/dashboard',
+    successRedirect: 'https://dashboard.taufiqproject.my.id/',
     failureRedirect: '/auth/login',
     failureFlash: true,
   })(req, res, next);
