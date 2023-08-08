@@ -299,12 +299,30 @@ passport.use(
     {
       clientID: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: 'https://sso.taufiqproject.my.id/auth/google/callback', // Tentukan URL callback setelah autentikasi Google berhasil
+      callbackURL: 'https://sso.taufiqproject.my.id/auth/google/callback',
     },
-    function (accessToken, refreshToken, profile, cb) {
-      User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        return cb(err, user);
-      });
+    async function (accessToken, refreshToken, profile, cb) {
+      try {
+        const existingUser = await User.findOne({ googleId: profile.id });
+
+        if (existingUser) {
+          // Pengguna sudah terdaftar, lanjutkan dengan autentikasi
+          return cb(null, existingUser);
+        } else {
+          // Buat pengguna baru dari data profil Google
+          const newUser = new User({
+            name: profile.displayName,
+            email: profile.emails[0].value,
+            verified: true, // Sesuaikan dengan kebutuhan Anda
+            googleId: profile.id,
+          });
+
+          await newUser.save(); // Simpan pengguna baru ke dalam basis data
+          return cb(null, newUser);
+        }
+      } catch (err) {
+        return cb(err);
+      }
     }
   )
 );

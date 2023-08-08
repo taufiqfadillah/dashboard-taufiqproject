@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
+const User = require('../models/User');
+
 //------------ Importing Controllers ------------//
 const authController = require('../controllers/authController');
 
@@ -42,7 +44,7 @@ router.get('/logout', authController.logoutHandle);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Rute untuk callback autentikasi Google
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/login' }), (req, res) => {
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/login' }), async (req, res) => {
   res.redirect('/dash');
 });
 
