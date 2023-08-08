@@ -223,27 +223,39 @@ body {
   border-color: rgba(253, 29, 29, 1);
   box-shadow: 0 0 0 1px rgba(255, 133, 0, 1);
 }
-.social-links {
-  display: flex;
-}
 .social-links a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  font-size: 18px;
+  padding: 10px 20px;
   color: #fff;
-  height: 40px;
-  background: hsla(0, 0%, 100%, 0.4);
-  border-radius: 15px;
-  margin-right: 15px;
+  margin-bottom: 10px;
   transition: all 0.3s;
+  position: relative;
+  border-radius: 10px; /* Tambahkan properti ini untuk radius */
+}
+.social-links a i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  padding: 0 20px;
+  background: hsla(0, 0%, 100%, 0.2);
+  display: flex;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 .social-links a:last-child {
   margin-right: 0;
 }
 .social-links a:focus,
 .social-links a:hover {
-  background: hsla(0, 0%, 100%, 0.8);
-  transform: scale(1.1);
+  opacity: 0.9;
+  text-decoration: none;
+}
+@media (max-width: 500px) {
+  .social-links a i {
+    padding: 0 10px !important;
+  }
 }
