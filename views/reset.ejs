@@ -1,29 +1,54 @@
-<div class="row mt-5">
-    <div class="col-md-6 m-auto">
-        <div class="card card-body text-center">
-            <h1 class="mb-3">
-                <img src="/assets/secure-icon.png" alt="icon" width="20%" />
-            </h1>
-            <h2>
-                Reset Password
-            </h2>
-            <%- include ("./messages") %>
-            <form action="/auth/reset/<%= id %>"  method="POST">
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter Password"
-                      value="<%= typeof password != 'undefined' ? password : '' %>" />
-                  </div>
-                  <div class="form-group">
-                    <label for="password2">Confirm Password</label>
-                    <input type="password" id="password2" name="password2" class="form-control" placeholder="Confirm Password"
-                      value="<%= typeof password2 != 'undefined' ? password2 : '' %>" />
-                  </div>
-                <button type="submit" class="btn btn-primary btn-block">Reset Password</button>
-            </form>
-            <p class="mt-4">
-                Remember your password? <a href="/auth/login">Login</a>
-            </p>
+<div class="form-wrapper">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-5 d-none d-lg-inline">
+        <figure class="mb-5">
+          <img class="img-fluid" src="/assets/images/sign_in_sign_up.svg" alt="" />
+        </figure>
+        <div class="text-center d-none d-lg-inline">
+          <p>You can now <a href="/auth/login">sign in</a> or <a href="/auth/register">create an account</a>.</p>
         </div>
+      </div>
+      <div class="col-lg-4 offset-lg-2 pt-4">
+        <div class="logo text-center text-lg-left">
+          <img src="/assets/images/logo.png" alt="logo" />
+        </div>
+        <div class="my-5 text-center text-lg-left">
+          <h3 class="font-weight-bold mb-3">Change Password</h3>
+          <p class="text-muted">Change your password to log in.</p>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <%- include ("./messages") %>
+            <form action="/auth/reset/<%= id %>" method="POST">
+              <div class="form-group">
+                <label for="password">New password</label>
+                <div class="form-icon-wrapper">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" value="<%= typeof password != 'undefined' ? password : '' %>" autofocus required />
+                  <i class="form-icon-left mdi mdi-lock"></i>
+                  <a href="#" class="form-icon-right password-show-hide" title="Hide or show password">
+                    <i class="mdi mdi-eye"></i>
+                  </a>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password2">Retype password</label>
+                <div class="form-icon-wrapper">
+                  <input type="password" class="form-control" id="password2" name="password2" placeholder="Enter password" value="<%= typeof password2 != 'undefined' ? password2 : '' %>" autofocus required />
+                  <i class="form-icon-left mdi mdi-lock"></i>
+                  <a href="#" class="form-icon-right password-show-hide" title="Hide or show password">
+                    <i class="mdi mdi-eye"></i>
+                  </a>
+                </div>
+              </div>
+              <div class="text-center text-lg-left">
+                <button type="submit" class="btn btn-primary">Change Password</button>
+              </div>
+              <div class="text-center d-block d-lg-none mt-3 mt-lg-0">You can now <a href="/auth/login">sign in</a> or <a href="/auth/register">create an account</a>.</div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
