@@ -1,13 +1,12 @@
-const app = require('express')();
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
-const bodyParser = require('body-parser');
+const path = require('path');
 
-app.use(bodyParser.urlencoded({ extended: true }));
+const app = require('express')();
 
 //------------ Passport Configuration ------------//
 require('./config/passport')(passport);
@@ -23,8 +22,9 @@ mongoose
 
 //------------ EJS Configuration ------------//
 app.use(expressLayouts);
-app.use('/assets', express.static('./assets'));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 //------------ Bodyparser Configuration ------------//
 app.use(express.urlencoded({ extended: false }));
