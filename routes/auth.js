@@ -45,7 +45,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/login' }), (req, res) => {
   // Di sini Anda dapat melakukan tindakan setelah autentikasi Google berhasil
   // Misalnya, mengarahkan pengguna ke halaman dashboard
-  res.redirect('/dashboard');
+  res.redirect('/dash');
 });
 
 module.exports = router;
