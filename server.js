@@ -5,20 +5,26 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
 const path = require('path');
+const morgan = require('morgan');
 
-const app = require('express')();
+const app = express();
 
 //------------ Passport Configuration ------------//
 require('./config/passport')(passport);
 
 //------------ DB Configuration ------------//
-const db = require('./config/key').MongoURI;
+const { MongoURI } = require('./config/key');
 
 //------------ Mongo Connection ------------//
-mongoose
-  .connect(db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
-  .then(() => console.log('Successfully connected to MongoDB👌👌👌'))
-  .catch((err) => console.log(err));
+async function connectToDatabase() {
+  try {
+    await mongoose.connect(MongoURI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
+    console.log('Successfully connected to MongoDB👌👌👌');
+  } catch (error) {
+    console.error(error);
+  }
+}
+connectToDatabase();
 
 //------------ EJS Configuration ------------//
 app.use(expressLayouts);
@@ -46,16 +52,25 @@ app.use(passport.session());
 app.use(flash());
 
 //------------ Global variables ------------//
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
   next();
 });
+
 //------------ Routes ------------//
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 
-const PORT = process.env.PORT;
+//------------ Error Handling ------------//
+app.use((req, res) => {
+  res.status(404).render('404');
+});
 
-app.listen(PORT, console.log(`Server running on PORT http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+
+//------------ Server Listen ------------//
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
