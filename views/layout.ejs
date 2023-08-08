@@ -20,8 +20,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet" />
     <!-- Latform styles -->
     <link rel="stylesheet" href="/assets/css/latform-style-3.min.css" type="text/css" />
-    <!-- Recaptcha -->
-    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ld4I40nAAAAAMhGKhEBZ_tdMcRhHghOS5XsygEh"></script>
   </head>
   <style>
     body {
@@ -39,19 +37,6 @@
   <body>
     <div class="container"><%- body %></div>
 
-    <!-- reCaptcha -->
-    <script>
-      function onClick(e) {
-        e.preventDefault();
-        grecaptcha.enterprise.ready(async () => {
-          const token = await grecaptcha.enterprise.execute('6Ld4I40nAAAAAMhGKhEBZ_tdMcRhHghOS5XsygEh', { action: 'LOGIN' });
-          // IMPORTANT: The 'token' that results from execute is an encrypted response sent by
-          // reCAPTCHA Enterprise to the end user's browser.
-          // This token must be validated by creating an assessment.
-          // See https://cloud.google.com/recaptcha-enterprise/docs/create-assessment
-        });
-      }
-    </script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <!-- Jquery -->
