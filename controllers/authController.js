@@ -55,14 +55,10 @@ exports.registerHandle = (req, res) => {
           password2,
         });
       } else {
-        const oauth2Client = new OAuth2(
-          '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com', // ClientID
-          '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', // Client Secret
-          'https://developers.google.com/oauthplayground' // Redirect URL
-        );
+        const oauth2Client = new OAuth2(process.env.GOOGLE_ID, process.env.GOOGLE_SECRET, 'https://developers.google.com/oauthplayground');
 
         oauth2Client.setCredentials({
-          refresh_token: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
+          refresh_token: process.env.GOOGLE_TOKEN,
         });
         const accessToken = oauth2Client.getAccessToken();
 
@@ -182,14 +178,10 @@ exports.forgotPassword = (req, res) => {
           email,
         });
       } else {
-        const oauth2Client = new OAuth2(
-          '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com', // ClientID
-          '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', // Client Secret
-          'https://developers.google.com/oauthplayground' // Redirect URL
-        );
+        const oauth2Client = new OAuth2(process.env.GOOGLE_ID, process.env.GOOGLE_SECRET, 'https://developers.google.com/oauthplayground');
 
         oauth2Client.setCredentials({
-          refresh_token: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
+          refresh_token: process.env.GOOGLE_TOKEN,
         });
         const accessToken = oauth2Client.getAccessToken();
 
