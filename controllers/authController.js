@@ -9,101 +9,71 @@ require('dotenv').config();
 const JWT_KEY = process.env.JWT_KEY;
 const JWT_RESET_KEY = process.env.JWT_RESET_KEY;
 const CLIENT_URL = process.env.CLIENT_URL;
+const GOOGLE_ID = process.env.GOOGLE_ID;
+const GOOGLE_SECRET = process.env.GOOGLE_SECRET;
+const GOOGLE_TOKEN = process.env.GOOGLE_TOKEN;
 
 //------------ User Model ------------//
 const User = require('../models/User');
 
 //------------ Register Handle ------------//
-exports.registerHandle = (req, res) => {
+exports.registerHandle = async (req, res) => {
   const { name, email, password, password2 } = req.body;
-  let errors = [];
 
-  //------------ Checking required fields ------------//
-  if (!name || !email || !password || !password2) {
-    errors.push({ msg: 'Please enter all fields' });
-  }
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      return res.render('register', {
+        errors: [{ msg: 'Email ID already registered' }],
+        name,
+        email,
+        password,
+        password2,
+      });
+    }
 
-  //------------ Checking password mismatch ------------//
-  if (password != password2) {
-    errors.push({ msg: 'Passwords do not match' });
-  }
-
-  //------------ Checking password length ------------//
-  if (password.length < 8) {
-    errors.push({ msg: 'Password must be at least 8 characters' });
-  }
-
-  if (errors.length > 0) {
-    res.render('register', {
-      errors,
-      name,
-      email,
-      password,
-      password2,
+    const oauth2Client = new OAuth2(GOOGLE_ID, GOOGLE_SECRET, 'https://developers.google.com/oauthplayground');
+    oauth2Client.setCredentials({
+      refresh_token: GOOGLE_TOKEN,
     });
-  } else {
-    //------------ Validation passed ------------//
-    User.findOne({ email: email }).then((user) => {
-      if (user) {
-        //------------ User already exists ------------//
-        errors.push({ msg: 'Email ID already registered' });
-        res.render('register', {
-          errors,
-          name,
-          email,
-          password,
-          password2,
-        });
-      } else {
-        const oauth2Client = new OAuth2(process.env.GOOGLE_ID, process.env.GOOGLE_SECRET, 'https://developers.google.com/oauthplayground');
+    const accessToken = oauth2Client.getAccessToken();
 
-        oauth2Client.setCredentials({
-          refresh_token: process.env.GOOGLE_TOKEN,
-        });
-        const accessToken = oauth2Client.getAccessToken();
+    const token = jwt.sign({ name, email, password }, JWT_KEY, { expiresIn: '30m' });
 
-        const token = jwt.sign({ name, email, password }, JWT_KEY, { expiresIn: '30m' });
+    const output = `
+      <h2>Please click on below link to activate your account</h2>
+      <p>${CLIENT_URL}/auth/activate/${token}</p>
+      <p><b>NOTE: </b> The above activation link expires in 30 minutes.</p>
+    `;
 
-        const output = `
-                <h2>Please click on below link to activate your account</h2>
-                <p>${CLIENT_URL}/auth/activate/${token}</p>
-                <p><b>NOTE: </b> The above activation link expires in 30 minutes.</p>
-                `;
-
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            type: 'OAuth2',
-            user: 'fuungt@gmail.com',
-            clientId: '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com',
-            clientSecret: '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',
-            refreshToken: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
-            accessToken: accessToken,
-          },
-        });
-
-        // send mail with defined transport object
-        const mailOptions = {
-          from: '"Taufiq Project || Email Verification" <admin@taufiqproject.my.id>', // sender address
-          to: email, // list of receivers
-          subject: 'Account Verification: Taufiq Project ✔', // Subject line
-          generateTextFromHTML: true,
-          html: output, // html body
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.log(error);
-            req.flash('error_msg', 'Something went wrong on our end. Please register again.');
-            res.redirect('/auth/login');
-          } else {
-            console.log('Mail sent : %s', info.response);
-            req.flash('success_msg', 'Activation link sent to email ID. Please activate to log in.');
-            res.redirect('/auth/login');
-          }
-        });
-      }
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: 'fuungt@gmail.com',
+        clientId: '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com',
+        clientSecret: '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',
+        refreshToken: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
+        accessToken,
+      },
     });
+
+    const mailOptions = {
+      from: '"Taufiq Project || Email Verification" <admin@taufiqproject.my.id>',
+      to: email,
+      subject: 'Account Verification: Taufiq Project ✔',
+      generateTextFromHTML: true,
+      html: output,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    req.flash('success_msg', 'Activation link sent to email ID. Please activate to log in.');
+    res.redirect('/auth/login');
+  } catch (error) {
+    console.error(error);
+    req.flash('error_msg', 'Something went wrong on our end. Please register again.');
+    res.redirect('/auth/login');
   }
 };
 
@@ -178,10 +148,10 @@ exports.forgotPassword = (req, res) => {
           email,
         });
       } else {
-        const oauth2Client = new OAuth2(process.env.GOOGLE_ID, process.env.GOOGLE_SECRET, 'https://developers.google.com/oauthplayground');
+        const oauth2Client = new OAuth2(GOOGLE_ID, GOOGLE_SECRET, 'https://developers.google.com/oauthplayground');
 
         oauth2Client.setCredentials({
-          refresh_token: process.env.GOOGLE_TOKEN,
+          refresh_token: GOOGLE_TOKEN,
         });
         const accessToken = oauth2Client.getAccessToken();
 
