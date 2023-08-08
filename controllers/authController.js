@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const jwt = require('jsonwebtoken');
+
 const JWT_KEY = 'jwtactive987';
 const JWT_RESET_KEY = 'jwtreset987';
 
@@ -53,13 +54,13 @@ exports.registerHandle = (req, res) => {
         });
       } else {
         const oauth2Client = new OAuth2(
-          '173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com', // ClientID
-          'OKXIYR14wBB_zumf30EC__iJ', // Client Secret
+          '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com', // ClientID
+          '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', // Client Secret
           'https://developers.google.com/oauthplayground' // Redirect URL
         );
 
         oauth2Client.setCredentials({
-          refresh_token: '1//04T_nqlj9UVrVCgYIARAAGAQSNwF-L9IrGm-NOdEKBOakzMn1cbbCHgg2ivkad3Q_hMyBkSQen0b5ABfR8kPR18aOoqhRrSlPm9w',
+          refresh_token: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
         });
         const accessToken = oauth2Client.getAccessToken();
 
@@ -76,19 +77,19 @@ exports.registerHandle = (req, res) => {
           service: 'gmail',
           auth: {
             type: 'OAuth2',
-            user: 'nodejsa@gmail.com',
-            clientId: '173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com',
-            clientSecret: 'OKXIYR14wBB_zumf30EC__iJ',
-            refreshToken: '1//04T_nqlj9UVrVCgYIARAAGAQSNwF-L9IrGm-NOdEKBOakzMn1cbbCHgg2ivkad3Q_hMyBkSQen0b5ABfR8kPR18aOoqhRrSlPm9w',
+            user: 'fuungt@gmail.com',
+            clientId: '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com',
+            clientSecret: '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',
+            refreshToken: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
             accessToken: accessToken,
           },
         });
 
         // send mail with defined transport object
         const mailOptions = {
-          from: '"Auth Admin" <nodejsa@gmail.com>', // sender address
+          from: '"Taufiq Project || Email Verification" <admin@taufiqproject.my.id>', // sender address
           to: email, // list of receivers
-          subject: 'Account Verification: NodeJS Auth ✔', // Subject line
+          subject: 'Account Verification: Taufiq Project ✔', // Subject line
           generateTextFromHTML: true,
           html: output, // html body
         };
@@ -181,13 +182,13 @@ exports.forgotPassword = (req, res) => {
         });
       } else {
         const oauth2Client = new OAuth2(
-          '173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com', // ClientID
-          'OKXIYR14wBB_zumf30EC__iJ', // Client Secret
+          '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com', // ClientID
+          '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', // Client Secret
           'https://developers.google.com/oauthplayground' // Redirect URL
         );
 
         oauth2Client.setCredentials({
-          refresh_token: '1//04T_nqlj9UVrVCgYIARAAGAQSNwF-L9IrGm-NOdEKBOakzMn1cbbCHgg2ivkad3Q_hMyBkSQen0b5ABfR8kPR18aOoqhRrSlPm9w',
+          refresh_token: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
         });
         const accessToken = oauth2Client.getAccessToken();
 
@@ -211,19 +212,19 @@ exports.forgotPassword = (req, res) => {
               service: 'gmail',
               auth: {
                 type: 'OAuth2',
-                user: 'nodejsa@gmail.com',
-                clientId: '173872994719-pvsnau5mbj47h0c6ea6ojrl7gjqq1908.apps.googleusercontent.com',
-                clientSecret: 'OKXIYR14wBB_zumf30EC__iJ',
-                refreshToken: '1//04T_nqlj9UVrVCgYIARAAGAQSNwF-L9IrGm-NOdEKBOakzMn1cbbCHgg2ivkad3Q_hMyBkSQen0b5ABfR8kPR18aOoqhRrSlPm9w',
+                user: 'fuungt@gmail.com',
+                clientId: '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com',
+                clientSecret: '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',
+                refreshToken: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
                 accessToken: accessToken,
               },
             });
 
             // send mail with defined transport object
             const mailOptions = {
-              from: '"Auth Admin" <nodejsa@gmail.com>', // sender address
+              from: '"Taufiq Project || Reset Password" <admin@taufiqproject.my.id>', // sender address
               to: email, // list of receivers
-              subject: 'Account Password Reset: NodeJS Auth ✔', // Subject line
+              subject: 'Account Password Reset: Taufiq Project ✔', // Subject line
               html: output, // html body
             };
 
