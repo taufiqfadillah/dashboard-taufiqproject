@@ -1,4 +1,5 @@
 const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const bcryptjs = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
@@ -291,3 +292,20 @@ exports.logoutHandle = (req, res) => {
   req.flash('success_msg', 'You are logged out');
   res.redirect('/auth/login');
 };
+
+//------------ Google Login Handle ------------//
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+      callbackURL: '/auth/google/callback', // Tentukan URL callback setelah autentikasi Google berhasil
+    },
+    (accessToken, refreshToken, profile, done) => {
+      // Lakukan tindakan setelah autentikasi berhasil
+      // Misalnya, mencari atau membuat pengguna di basis data
+      // profile berisi informasi pengguna dari Google
+      // Done berfungsi untuk menyelesaikan autentikasi
+    }
+  )
+);

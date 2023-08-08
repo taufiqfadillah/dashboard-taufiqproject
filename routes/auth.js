@@ -38,10 +38,14 @@ router.get('/forgot/:token', authController.gotoReset);
 //------------ Logout GET Handle ------------//
 router.get('/logout', authController.logoutHandle);
 
-//------------ Google Login ------------//
+// Rute untuk memulai autentikasi Google
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Rute untuk callback autentikasi Google
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/login' }), (req, res) => {
-  res.redirect('/dash');
+  // Di sini Anda dapat melakukan tindakan setelah autentikasi Google berhasil
+  // Misalnya, mengarahkan pengguna ke halaman dashboard
+  res.redirect('/dashboard');
 });
 
 module.exports = router;

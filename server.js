@@ -56,6 +56,10 @@ app.use(function (req, res, next) {
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 
+//------------ Auth Google ------------//
+app.use(passport.initialize());
+app.use(passport.session());
+
 const PORT = process.env.PORT;
 
 app.listen(PORT, console.log(`Server running on PORT http://localhost:${PORT}`));
