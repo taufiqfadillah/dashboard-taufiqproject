@@ -45,7 +45,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 // Rute untuk callback autentikasi Google
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/login' }), async (req, res) => {
-  res.redirect('/dash');
+  res.redirect('https://dashboard.taufiqproject.my.id/');
 });
 
 module.exports = router;
