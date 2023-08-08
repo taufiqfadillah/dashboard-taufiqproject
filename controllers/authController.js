@@ -4,9 +4,11 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const JWT_KEY = 'jwtactive987';
-const JWT_RESET_KEY = 'jwtreset987';
+const JWT_KEY = process.env.JWT_KEY;
+const JWT_RESET_KEY = process.env.JWT_RESET_KEY;
+const CLIENT_URL = process.env.CLIENT_URL;
 
 //------------ User Model ------------//
 const User = require('../models/User');
@@ -65,7 +67,6 @@ exports.registerHandle = (req, res) => {
         const accessToken = oauth2Client.getAccessToken();
 
         const token = jwt.sign({ name, email, password }, JWT_KEY, { expiresIn: '30m' });
-        const CLIENT_URL = 'http://' + req.headers.host;
 
         const output = `
                 <h2>Please click on below link to activate your account</h2>
