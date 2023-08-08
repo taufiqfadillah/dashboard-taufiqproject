@@ -306,16 +306,15 @@ passport.use(
         const existingUser = await User.findOne({ googleId: profile.id });
 
         if (existingUser) {
-          // Pengguna sudah terdaftar, lanjutkan dengan autentikasi
+          // Jika pengguna sudah terdaftar, lanjutkan dengan autentikasi
           return cb(null, existingUser);
         } else {
-          // Buat pengguna baru dari data profil Google
+          // Pengguna belum terdaftar, buat entri baru
           const newUser = new User({
             name: profile.displayName,
             email: profile.emails[0].value,
-            verified: true, // Sesuaikan dengan kebutuhan Anda
+            verified: true,
             googleId: profile.id,
-            password: Math.random().toString(36).slice(-8), // Berikan password acak
           });
 
           await newUser.save(); // Simpan pengguna baru ke dalam basis data
