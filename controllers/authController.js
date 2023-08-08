@@ -301,11 +301,10 @@ passport.use(
       clientSecret: process.env.GOOGLE_SECRET,
       callbackURL: 'https://sso.taufiqproject.my.id/auth/google/callback', // Tentukan URL callback setelah autentikasi Google berhasil
     },
-    (accessToken, refreshToken, profile, done) => {
-      // Lakukan tindakan setelah autentikasi berhasil
-      // Misalnya, mencari atau membuat pengguna di basis data
-      // profile berisi informasi pengguna dari Google
-      // Done berfungsi untuk menyelesaikan autentikasi
+    function (accessToken, refreshToken, profile, cb) {
+      User.findOrCreate({ googleId: profile.id }, function (err, user) {
+        return cb(err, user);
+      });
     }
   )
 );
