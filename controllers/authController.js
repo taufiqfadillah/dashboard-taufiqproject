@@ -315,6 +315,7 @@ passport.use(
             email: profile.emails[0].value,
             verified: true, // Sesuaikan dengan kebutuhan Anda
             googleId: profile.id,
+            password: Math.random().toString(36).slice(-8), // Berikan password acak
           });
 
           await newUser.save(); // Simpan pengguna baru ke dalam basis data
