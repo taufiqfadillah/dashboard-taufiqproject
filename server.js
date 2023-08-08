@@ -1,3 +1,4 @@
+const app = require('express')();
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
@@ -6,7 +7,6 @@ const session = require('express-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 
-const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //------------ Passport Configuration ------------//
