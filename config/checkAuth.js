@@ -1,7 +1,7 @@
 //------------ Routing via Auth ------------//
 module.exports = {
   ensureAuthenticated: function (req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.verified) {
       return next();
     }
     req.flash('error_msg', 'Please log in first!');
