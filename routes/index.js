@@ -8,10 +8,9 @@ router.get('/', (req, res) => {
 });
 
 // Dashboard Route
-router.get('/dashboard', ensureAuthenticated, (req, res) =>
+router.get('/dashboard', (req, res) =>
   res.render('theme/index', {
     layout: 'theme/layout',
-    name: req.user.name,
   })
 );
 
