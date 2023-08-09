@@ -4,9 +4,11 @@ const mongoose = require('mongoose');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
+const cookieParser = require('cookie-parser');
 const path = require('path');
 
 const app = require('express')();
+app.use(cookieParser());
 
 //------------ Passport Configuration ------------//
 require('./config/passport')(passport);
@@ -25,6 +27,17 @@ app.use(expressLayouts);
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+//------------ Cookie-Parser ------------//
+app.get('/set-cookie', (req, res) => {
+  res.cookie('cookieName', 'cookieValue', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+  });
+
+  res.send('Cookie telah diatur.');
+});
 
 //------------ Bodyparser Configuration ------------//
 app.use(express.urlencoded({ extended: false }));
@@ -55,6 +68,10 @@ app.use(function (req, res, next) {
 //------------ Routes ------------//
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
+
+//------------ Auth Google ------------//
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 const PORT = process.env.PORT;
 

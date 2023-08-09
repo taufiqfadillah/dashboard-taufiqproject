@@ -2,49 +2,48 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
+const User = require('../models/User');
+
 //------------ Importing Controllers ------------//
 const authController = require('../controllers/authController');
 
 //------------ Login Route ------------//
-router.get('/login', (req, res) => res.render('login'));
+router
+  .route('/login')
+  .get((req, res) => res.render('login'))
+  .post(authController.loginHandle);
 
 //------------ Forgot Password Route ------------//
-router.get('/forgot', (req, res) => res.render('forgot'));
+router
+  .route('/forgot')
+  .get((req, res) => res.render('forgot'))
+  .post(authController.forgotPassword);
 
 //------------ Reset Password Route ------------//
-router.get('/reset/:id', (req, res) => {
-  // console.log(id)
-  res.render('reset', { id: req.params.id });
-});
+router
+  .route('/reset/:id')
+  .get((req, res) => res.render('reset', { id: req.params.id }))
+  .post(authController.resetPassword);
 
 //------------ Register Route ------------//
-router.get('/register', (req, res) => res.render('register'));
-
-//------------ Register POST Handle ------------//
-router.post('/register', authController.registerHandle);
+router
+  .route('/register')
+  .get((req, res) => res.render('register'))
+  .post(authController.registerHandle);
 
 //------------ Email ACTIVATE Handle ------------//
 router.get('/activate/:token', authController.activateHandle);
 
-//------------ Forgot Password Handle ------------//
-router.post('/forgot', authController.forgotPassword);
-
-//------------ Reset Password Handle ------------//
-router.post('/reset/:id', authController.resetPassword);
-
 //------------ Reset Password Handle ------------//
 router.get('/forgot/:token', authController.gotoReset);
-
-//------------ Login POST Handle ------------//
-router.post('/login', authController.loginHandle);
 
 //------------ Logout GET Handle ------------//
 router.get('/logout', authController.logoutHandle);
 
-//------------ Google Auth ------------//
+// Rute untuk memulai autentikasi Google
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-//------------ Google Auth Callback Route------------//
+// Rute untuk callback autentikasi Google
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/login' }), async (req, res) => {
   res.redirect('/dashboard');
 });
