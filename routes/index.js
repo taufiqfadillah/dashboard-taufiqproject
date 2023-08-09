@@ -19,13 +19,13 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
 
 const themeFiles = ['add-post', 'blog-single', 'blog', 'chat-video', 'chat', 'edit-profile', 'file-manager', 'index', 'to-do', 'user-profile'];
 
-themeFiles.forEach((file) => {
-  router.get('/${file}', (req, res) =>
-    res.render('theme/${file}', {
+for (const file of themeFiles) {
+  router.get(`/${file}`, (req, res) =>
+    res.render(`theme/${file}`, {
       layout: 'theme/layout',
       name: req.user.name,
     })
   );
-});
+}
 
 module.exports = router;
