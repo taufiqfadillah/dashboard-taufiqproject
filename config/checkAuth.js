@@ -1,5 +1,3 @@
-const User = require('../models/User');
-
 //------------ Routing via Auth ------------//
 module.exports = {
   ensureAuthenticated: function (req, res, next) {
