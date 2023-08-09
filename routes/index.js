@@ -19,13 +19,8 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
 
 const themeFiles = ['add-post', 'blog-single', 'blog', 'chat-video', 'chat', 'edit-profile', 'file-manager', 'index', 'to-do', 'user-profile'];
 
-router.use('/${file}', ensureAuthenticated, (req, res, next) => {
-  // This middleware ensures authentication for all theme routes
-  next();
-});
-
 themeFiles.forEach((file) => {
-  router.get(`/${file}`, (req, res) =>
+  router.get(`/${file}`, ensureAuthenticated, (req, res) =>
     res.render(`theme/${file}`, {
       layout: 'theme/layout',
       name: req.user.name,
