@@ -15,61 +15,61 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
   })
 );
 
-router.get('/add-post', ensureAuthenticated, (req, res) =>
+router.get('/add-post', (req, res) =>
   res.render('theme/add-post', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/blog-single', ensureAuthenticated, (req, res) =>
+router.get('/blog-single', (req, res) =>
   res.render('theme/blog-single', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/blog', ensureAuthenticated, (req, res) =>
+router.get('/blog', (req, res) =>
   res.render('theme/blog', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/chat-video', ensureAuthenticated, (req, res) =>
+router.get('/chat-video', (req, res) =>
   res.render('theme/chat-video', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/chat', ensureAuthenticated, (req, res) =>
+router.get('/chat', (req, res) =>
   res.render('theme/chat', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/edit-profile', ensureAuthenticated, (req, res) =>
+router.get('/edit-profile', (req, res) =>
   res.render('theme/edit-profile', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/file-manager', ensureAuthenticated, (req, res) =>
+router.get('/file-manager', (req, res) =>
   res.render('theme/file-manager', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/index', ensureAuthenticated, (req, res) =>
+router.get('/index', (req, res) =>
   res.render('theme/index', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/to-do', ensureAuthenticated, (req, res) =>
+router.get('/to-do', (req, res) =>
   res.render('theme/to-do', {
     layout: 'theme/layout',
   })
 );
 
-router.get('/user-profile', ensureAuthenticated, (req, res) =>
+router.get('/user-profile', (req, res) =>
   res.render('theme/user-profile', {
     layout: 'theme/layout',
   })
