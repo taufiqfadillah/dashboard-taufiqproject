@@ -15,12 +15,17 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
   })
 );
 
-//------------ Other Theme Routes ------------//
+//------------ Grouped Theme Routes ------------//
 
 const themeFiles = ['add-post', 'blog-single', 'blog', 'chat-video', 'chat', 'edit-profile', 'file-manager', 'index', 'to-do', 'user-profile'];
 
+router.use('/theme', ensureAuthenticated, (req, res, next) => {
+  // This middleware ensures authentication for all theme routes
+  next();
+});
+
 themeFiles.forEach((file) => {
-  router.get(`/${file}`, ensureAuthenticated, (req, res) =>
+  router.get(`/theme/${file}`, (req, res) =>
     res.render(`theme/${file}`, {
       layout: 'theme/layout',
       name: req.user.name,
