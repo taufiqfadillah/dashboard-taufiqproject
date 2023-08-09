@@ -2,6 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated } = require('../config/checkAuth');
 
+const themeFiles = ['add-post', 'blog-single', 'blog', 'chat-video', 'chat', 'edit-profile', 'file-manager', 'index', 'to-do', 'user-profile'];
+
+router.use('/${file}', ensureAuthenticated, (req, res, next) => {
+  next();
+});
+
 //------------ Welcome Route ------------//
 router.get('/', (req, res) => {
   res.render('login');
@@ -16,8 +22,6 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
 );
 
 //------------ Grouped Theme Routes ------------//
-
-const themeFiles = ['add-post', 'blog-single', 'blog', 'chat-video', 'chat', 'edit-profile', 'file-manager', 'index', 'to-do', 'user-profile'];
 
 themeFiles.forEach((file) => {
   router.get(`/${file}`, ensureAuthenticated, (req, res) =>
