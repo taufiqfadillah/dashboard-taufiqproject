@@ -6,7 +6,7 @@ module.exports = {
     if (req.isAuthenticated()) {
       try {
         const user = await User.findById(req.user._id);
-        if (user && user.isLoggedIn) {
+        if (user && user.isLoggedIn === true) {
           return next();
         } else {
           req.flash('error_msg', 'Please log in first!');
