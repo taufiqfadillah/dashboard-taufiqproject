@@ -10,7 +10,7 @@ const authController = require('../controllers/authController');
 //------------ Login Route ------------//
 router
   .route('/login')
-  .get((req, res) => res.render('login'))
+  .get(forwardAuthenticated, (req, res) => res.render('login'))
   .post(authController.loginHandle);
 
 //------------ Forgot Password Route ------------//
@@ -28,7 +28,7 @@ router
 //------------ Register Route ------------//
 router
   .route('/register')
-  .get((req, res) => res.render('register'))
+  .get(forwardAuthenticated, (req, res) => res.render('register'))
   .post(authController.registerHandle);
 
 //------------ Email ACTIVATE Handle ------------//
