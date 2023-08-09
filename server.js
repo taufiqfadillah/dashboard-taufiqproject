@@ -7,6 +7,7 @@ const passport = require('passport');
 const path = require('path');
 
 const app = require('express')();
+app.set('trust proxy', 1);
 
 //------------ Passport Configuration ------------//
 require('./config/passport')(passport);
