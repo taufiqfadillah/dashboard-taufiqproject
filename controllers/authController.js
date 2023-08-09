@@ -283,31 +283,11 @@ exports.loginHandle = (req, res, next) => {
     successRedirect: '/dashboard',
     failureRedirect: '/auth/login',
     failureFlash: true,
-  })(req, res, async (err) => {
-    if (!err) {
-      if (req.user) {
-        try {
-          await User.findByIdAndUpdate(req.user.id, { verified: true });
-        } catch (error) {
-          console.error(error);
-        }
-      }
-      res.redirect('/dashboard');
-    } else {
-      next(err);
-    }
-  });
+  })(req, res, next);
 };
 
 //------------ Logout Handle ------------//
-exports.logoutHandle = async (req, res) => {
-  if (req.user) {
-    try {
-      await User.findByIdAndUpdate(req.user.id, { verified: false });
-    } catch (error) {
-      console.error(error);
-    }
-  }
+exports.logoutHandle = (req, res) => {
   req.logout();
   req.flash('success_msg', 'You are logged out');
   res.redirect('/auth/login');
