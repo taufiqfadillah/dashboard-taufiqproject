@@ -1,3 +1,4 @@
+const { file } = require('googleapis/build/src/apis/file');
 const mongoose = require('mongoose');
 
 //------------ User Schema ------------//
@@ -14,6 +15,14 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+    image: {
+      type: String,
+      default: 'user.png',
+    },
+    isLoggedIn: {
+      type: Boolean,
+      default: false,
     },
     verified: {
       type: Boolean,
