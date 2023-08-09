@@ -7,7 +7,6 @@ const passport = require('passport');
 const path = require('path');
 
 const app = require('express')();
-app.set('trust proxy', 1);
 
 //------------ Passport Configuration ------------//
 require('./config/passport')(passport);
@@ -31,6 +30,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: false }));
 
 //------------ Express session Configuration ------------//
+app.set('trust proxy', 1);
+
 app.use(
   session({
     secret: 'secret',
@@ -38,6 +39,7 @@ app.use(
     saveUninitialized: true,
     cookie: { secure: true },
     proxy: true,
+    rolling: true,
   })
 );
 
