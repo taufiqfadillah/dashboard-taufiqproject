@@ -279,54 +279,18 @@ exports.resetPassword = (req, res) => {
 
 //------------ Login Handle ------------//
 exports.loginHandle = (req, res, next) => {
-  passport.authenticate('local', async (err, user, info) => {
-    if (err) {
-      console.error(err);
-      req.flash('error_msg', 'Something went wrong. Please try again.');
-      return res.redirect('/auth/login');
-    }
-
-    if (!user) {
-      req.flash('error_msg', info.message);
-      return res.redirect('/auth/login');
-    }
-
-    try {
-      await User.findByIdAndUpdate(user._id, { isLoggedIn: true });
-
-      req.login(user, (err) => {
-        if (err) {
-          console.error(err);
-          req.flash('error_msg', 'Login failed. Please try again.');
-          return res.redirect('/auth/login');
-        }
-
-        req.flash('success_msg', 'Login successful!');
-        return res.redirect('/dashboard');
-      });
-    } catch (error) {
-      console.error(error);
-      req.flash('error_msg', 'Something went wrong. Please try again.');
-      return res.redirect('/auth/login');
-    }
+  passport.authenticate('local', {
+    successRedirect: '/dashboard',
+    failureRedirect: '/auth/login',
+    failureFlash: true,
   })(req, res, next);
 };
 
 //------------ Logout Handle ------------//
-exports.logoutHandle = async (req, res) => {
-  try {
-    if (req.isAuthenticated()) {
-      await User.findByIdAndUpdate(req.user._id, { isLoggedIn: false });
-    }
-
-    req.logout();
-    req.flash('success_msg', 'You are logged out.');
-    res.redirect('/auth/login');
-  } catch (error) {
-    console.error(error);
-    req.flash('error_msg', 'Something went wrong. Please try again.');
-    res.redirect('/dashboard');
-  }
+exports.logoutHandle = (req, res) => {
+  req.logout();
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/auth/login');
 };
 
 //------------ Google Login Handle ------------//
