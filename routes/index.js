@@ -9,9 +9,23 @@ router.get('/', (req, res) => {
 
 //------------ Dashboard Route ------------//
 router.get('/dashboard', ensureAuthenticated, (req, res) =>
-  res.render('dash', {
+  res.render('theme/index', {
+    layout: 'theme/layout',
     name: req.user.name,
   })
 );
+
+//------------ Other Theme Routes ------------//
+
+const themeFiles = ['add-post', 'blog-single', 'blog', 'chat-video', 'chat', 'edit-profile', 'file-manager', 'index', 'to-do', 'user-profile'];
+
+themeFiles.forEach((file) => {
+  router.get(`/${file}`, ensureAuthenticated, (req, res) =>
+    res.render(`theme/${file}`, {
+      layout: 'theme/layout',
+      name: req.user.name,
+    })
+  );
+});
 
 module.exports = router;
