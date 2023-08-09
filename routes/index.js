@@ -11,6 +11,7 @@ router.get('/', (req, res) => {
 router.get('/dashboard', ensureAuthenticated, (req, res) =>
   res.render('theme/index', {
     layout: 'theme/layout',
+    name: req.user.name,
   })
 );
 

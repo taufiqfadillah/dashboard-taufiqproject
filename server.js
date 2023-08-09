@@ -35,6 +35,7 @@ app.use(
     secret: 'secret',
     resave: true,
     saveUninitialized: true,
+    cookie: { secure: true },
   })
 );
 
@@ -55,10 +56,6 @@ app.use(function (req, res, next) {
 //------------ Routes ------------//
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
-
-//------------ Auth Google ------------//
-// app.use(passport.initialize());
-// app.use(passport.session());
 
 const PORT = process.env.PORT;
 
