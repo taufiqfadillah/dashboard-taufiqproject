@@ -25,7 +25,7 @@ router.use('/theme', ensureAuthenticated, (req, res, next) => {
 });
 
 themeFiles.forEach((file) => {
-  router.get(`/theme/${file}`, (req, res) =>
+  router.get(`/${file}`, (req, res) =>
     res.render(`theme/${file}`, {
       layout: 'theme/layout',
       name: req.user.name,
