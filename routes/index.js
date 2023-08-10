@@ -8,6 +8,10 @@ router.get('/', (req, res) => {
   res.render('login');
 });
 
+// Add this middleware to initialize Passport.js
+router.use(passport.initialize());
+router.use(passport.session());
+
 // Dashboard Route
 router.get('/dashboard', ensureAuthenticated, (req, res) =>
   res.render('theme/index', {
