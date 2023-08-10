@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-require('./config/passport')(passport);
 
 //------------ Importing Controllers ------------//
 const authController = require('../controllers/authController');
