@@ -1,6 +1,19 @@
 const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
 const router = express.Router();
 const { ensureAuthenticated } = require('../config/checkAuth');
+
+//------------ Passport Configuration ------------//
+require('./config/passport')(passport);
+
+app.use(
+  session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 
 // Welcome Route
 router.get('/', (req, res) => {
@@ -74,5 +87,8 @@ router.get('/user-profile', ensureAuthenticated, (req, res) =>
     layout: 'theme/layout',
   })
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 module.exports = router;

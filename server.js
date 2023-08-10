@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 
 const app = require('express')();
+
 app.use(cookieParser());
 
 //------------ Passport Configuration ------------//

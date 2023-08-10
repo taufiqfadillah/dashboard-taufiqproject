@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-
-const User = require('../models/User');
+require('./config/passport')(passport);
 
 //------------ Importing Controllers ------------//
 const authController = require('../controllers/authController');
@@ -40,10 +39,10 @@ router.get('/forgot/:token', authController.gotoReset);
 //------------ Logout GET Handle ------------//
 router.get('/logout', authController.logoutHandle);
 
-// Rute untuk memulai autentikasi Google
+//------------ Google Start Route ------------//
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-// Rute untuk callback autentikasi Google
+//------------ Google Callback Route ------------//
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/login' }), async (req, res) => {
   res.redirect('/dashboard');
 });
