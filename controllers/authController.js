@@ -299,7 +299,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: 'https://sso.taufiqproject.my.id/auth/google/callback',
+      callbackURL: 'https://dashboard.taufiqproject.my.id/auth/google/callback',
     },
     async function (accessToken, refreshToken, profile, cb) {
       try {
