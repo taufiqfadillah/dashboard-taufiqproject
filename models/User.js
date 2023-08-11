@@ -8,6 +8,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      default: '',
+    },
     email: {
       type: String,
       required: true,
@@ -19,6 +23,34 @@ const UserSchema = new mongoose.Schema(
     image: {
       type: String,
       default: 'user.png',
+    },
+    website: {
+      type: String,
+      default: '',
+    },
+    bio: {
+      type: String,
+      default: '',
+    },
+    aboutme: {
+      type: String,
+      default: '',
+    },
+    role: {
+      type: String,
+      default: 'Blogger',
+    },
+    university: {
+      type: String,
+      default: '',
+    },
+    address: {
+      type: String,
+      default: '',
+    },
+    status: {
+      type: String,
+      default: '',
     },
     isLoggedIn: {
       type: Boolean,

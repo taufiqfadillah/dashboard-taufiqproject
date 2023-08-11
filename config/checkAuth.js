@@ -4,12 +4,12 @@ module.exports = {
     console.log('Session:', req.session);
     console.log('User:', req.user);
 
-    if (req.isAuthenticated()) {
-      return next();
+    if (!req.isAuthenticated()) {
+      req.flash('error_msg', 'Please log in first!');
+      return res.redirect('/auth/login');
     }
 
-    req.flash('error_msg', 'Please log in first!');
-    res.redirect('/auth/login');
+    next();
   },
   forwardAuthenticated: function (req, res, next) {
     if (!req.isAuthenticated()) {
