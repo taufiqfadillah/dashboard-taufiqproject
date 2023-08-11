@@ -141,7 +141,6 @@
 
       &:first-child {
         a {
-
           &:hover,
           &:active {
             color: $danger-color;
@@ -169,7 +168,6 @@
   }
 }
 
-
 //Edit profile //
 .edit-profile {
   .profile-title {
@@ -180,7 +178,7 @@
       .media-body {
         margin-left: 14px;
 
-        [dir="rtl"] & {
+        [dir='rtl'] & {
           margin-left: unset;
           margin-right: 14px;
         }
@@ -188,8 +186,6 @@
     }
   }
 }
-
-
 
 /**=====================
     3.41 User-profile CSS Ends

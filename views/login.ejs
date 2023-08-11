@@ -19,10 +19,10 @@
             <%- include ("./messages") %>
             <form id="LOGIN" action="/auth/login" method="POST">
               <div class="form-group">
-                <label for="email">Email</label>
+                <label for="usernameOrEmail">Username or Email</label>
                 <div class="form-icon-wrapper">
-                  <input type="email" class="form-control" name="email" placeholder="Enter email" autofocus required />
-                  <i class="form-icon-left mdi mdi-email"></i>
+                  <input type="text" class="form-control" name="usernameOrEmail" placeholder="Enter username or email" autofocus required />
+                  <i class="form-icon-left mdi mdi-account"></i>
                 </div>
               </div>
               <div class="form-group">

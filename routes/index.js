@@ -13,6 +13,7 @@ router.get('/', (req, res) => {
 // Dashboard Route
 router.get('/dashboard', ensureAuthenticated, (req, res) =>
   res.render('theme/index', {
+    title: 'Taufiq Project || Dashboard',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -20,6 +21,7 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
 
 router.get('/add-post', ensureAuthenticated, (req, res) =>
   res.render('theme/add-post', {
+    title: 'Taufiq Project || Add Post',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -27,6 +29,7 @@ router.get('/add-post', ensureAuthenticated, (req, res) =>
 
 router.get('/blog-single', ensureAuthenticated, (req, res) =>
   res.render('theme/blog-single', {
+    title: 'Taufiq Project || Blog Single',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -34,6 +37,7 @@ router.get('/blog-single', ensureAuthenticated, (req, res) =>
 
 router.get('/blog', ensureAuthenticated, (req, res) =>
   res.render('theme/blog', {
+    title: 'Taufiq Project || Blog',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -41,6 +45,7 @@ router.get('/blog', ensureAuthenticated, (req, res) =>
 
 router.get('/chat-video', ensureAuthenticated, (req, res) =>
   res.render('theme/chat-video', {
+    title: 'Taufiq Project || Chat Video',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -48,6 +53,7 @@ router.get('/chat-video', ensureAuthenticated, (req, res) =>
 
 router.get('/chat', ensureAuthenticated, (req, res) =>
   res.render('theme/chat', {
+    title: 'Taufiq Project || Chat',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -55,6 +61,7 @@ router.get('/chat', ensureAuthenticated, (req, res) =>
 
 router.get('/edit-profile', ensureAuthenticated, (req, res) =>
   res.render('theme/edit-profile', {
+    title: 'Taufiq Project || Edit Profile',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -97,6 +104,7 @@ router.post('/edit-profile', ensureAuthenticated, async (req, res) => {
 
 router.get('/file-manager', ensureAuthenticated, (req, res) =>
   res.render('theme/file-manager', {
+    title: 'Taufiq Project || File Manager',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -104,6 +112,7 @@ router.get('/file-manager', ensureAuthenticated, (req, res) =>
 
 router.get('/to-do', ensureAuthenticated, (req, res) =>
   res.render('theme/to-do', {
+    title: 'Taufiq Project || To-Do',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -111,6 +120,7 @@ router.get('/to-do', ensureAuthenticated, (req, res) =>
 
 router.get('/user-profile', ensureAuthenticated, (req, res) =>
   res.render('theme/user-profile', {
+    title: 'Taufiq Project || User Profile',
     layout: 'theme/layout',
     user: req.user,
   })
