@@ -2,14 +2,17 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const flash = require('connect-flash');
-const session = require('express-session');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+require('dotenv').config();
 
 const app = require('express')();
-
 app.use(cookieParser());
+
+//------------ Creating Session ------------//
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 //------------ Passport Configuration ------------//
 require('./config/passport')(passport);
@@ -41,14 +44,24 @@ app.get('/set-cookie', (req, res) => {
 });
 
 //------------ Bodyparser Configuration ------------//
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 //------------ Express session Configuration ------------//
 app.use(
   session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: true,
+    name: 'Taufiqproject',
+    secret: process.env.EXPRESS_SESSION_KEY,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 100,
+    },
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      autoRemove: 'native', // remove expired sessions automatically
+      ttl: 7 * 24 * 60 * 60, // set session TTL to 7 days
+      stringify: false,
+    }),
   })
 );
 
@@ -66,13 +79,26 @@ app.use(function (req, res, next) {
   res.locals.error = req.flash('error');
   next();
 });
+
 //------------ Routes ------------//
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 
-//------------ Auth Google ------------//
-// app.use(passport.initialize());
-// app.use(passport.session());
+// Serializing the User to decide whichk key is to be kept in the Cookies
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+// Deserializing the User from the key in the Cookies
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    return done(null, user);
+  } catch (err) {
+    console.log('Error in Finding User --> Passport');
+    return done(err);
+  }
+});
 
 const PORT = process.env.PORT;
 

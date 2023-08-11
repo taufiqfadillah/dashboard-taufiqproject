@@ -62,7 +62,7 @@ exports.registerHandle = async (req, res) => {
     const mailOptions = {
       from: '"Taufiq Project || Email Verification" <admin@taufiqproject.my.id>',
       to: email,
-      subject: 'Account Verification: Taufiq Project ✔',
+      subject: 'Account Verification: Taufiq Project🎉🎉🎁',
       generateTextFromHTML: true,
       html: output,
     };
@@ -188,7 +188,7 @@ exports.forgotPassword = (req, res) => {
             const mailOptions = {
               from: '"Taufiq Project || Reset Password" <admin@taufiqproject.my.id>', // sender address
               to: email, // list of receivers
-              subject: 'Account Password Reset: Taufiq Project ✔', // Subject line
+              subject: 'Account Password Reset: Taufiq Project 🤖🤖🤖', // Subject line
               html: output, // html body
             };
 
