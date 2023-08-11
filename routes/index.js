@@ -44,16 +44,16 @@ router.get('/blog', ensureAuthenticated, (req, res) =>
 );
 
 router.get('/chat-video', ensureAuthenticated, (req, res) =>
-  res.render('theme/chat-video', {
-    title: 'Taufiq Project || Chat Video',
+  res.render('theme/comingsoon', {
+    title: 'Taufiq Project || Coming Soon😶‍🌫️',
     layout: 'theme/layout',
     user: req.user,
   })
 );
 
 router.get('/chat', ensureAuthenticated, (req, res) =>
-  res.render('theme/chat', {
-    title: 'Taufiq Project || Chat',
+  res.render('theme/comingsoon', {
+    title: 'Taufiq Project || Coming Soon😶‍🌫️',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -103,8 +103,8 @@ router.post('/edit-profile', ensureAuthenticated, async (req, res) => {
 });
 
 router.get('/file-manager', ensureAuthenticated, (req, res) =>
-  res.render('theme/file-manager', {
-    title: 'Taufiq Project || File Manager',
+  res.render('theme/comingsoon', {
+    title: 'Taufiq Project || Coming Soon😶‍🌫️',
     layout: 'theme/layout',
     user: req.user,
   })
