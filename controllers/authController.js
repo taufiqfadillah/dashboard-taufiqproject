@@ -112,7 +112,7 @@ exports.registerHandle = async (req, res) => {
                   <td style="padding: 30px">
                     <h6 style="font-weight: 600">Email Verificaiton</h6>
                     <p>you email verificaiton for Taufiq Project. If this is true, click below to email verificaiton.</p>
-                    <p style="text-align: center"><a href="${CLIENT_URL}" style="padding: 10px; background-color: #7366ff; color: #fff; display: inline-block; border-radius: 4px">email verificaiton</a></p>
+                    <p style="text-align: center"><a href="${CLIENT_URL}/auth/activate/${token}" style="padding: 10px; background-color: #7366ff; color: #fff; display: inline-block; border-radius: 4px">email verificaiton</a></p>
                     <p>If you have account you can safely ignore his email.</p>
                     <p>Good luck! Hope it works.</p>
                     <p style="margin-bottom: 0">Taufiq Project,<br />Admin</p>
