@@ -26,7 +26,23 @@ const UserSchema = new mongoose.Schema(
     },
     website: {
       type: String,
-      default: '',
+      default: 'https://www.taufiqproject.my.id/',
+    },
+    instagram: {
+      type: String,
+      default: 'https://www.instagram.com/',
+    },
+    twitter: {
+      type: String,
+      default: 'https://www.twitter.com/',
+    },
+    facebook: {
+      type: String,
+      default: 'https://www.facebook.com/',
+    },
+    linkedin: {
+      type: String,
+      default: 'https://www.linkedin.com/',
     },
     bio: {
       type: String,
@@ -48,9 +64,21 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    status: {
+    contact: {
       type: String,
       default: '',
+    },
+    bod: {
+      type: String,
+      default: '',
+    },
+    hobby: {
+      type: String,
+      default: '',
+    },
+    status: {
+      type: String,
+      default: 'Beginner',
     },
     isLoggedIn: {
       type: Boolean,

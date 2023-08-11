@@ -38,6 +38,8 @@
     <link id="color" rel="stylesheet" href="/assets/dashboard/css/color-1.css" media="screen" />
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/responsive.css" />
+    <!--  Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.css" />
   </head>
   <body onload="startTime()">
     <!-- loader starts-->
@@ -104,6 +106,16 @@
     <!-- Plugin used-->
     <script>
       new WOW().init();
+    </script>
+    <!-- DatePicker -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.js"></script>
+    <script src="https://npmcdn.com/flatpickr@4.6.6/dist/l10n/id.js"></script>
+    <!-- Lokalisasi Bahasa Indonesia -->
+    <script>
+      flatpickr('[data-flatpickr]', {
+        dateFormat: 'd-m-Y', // Sesuaikan format dengan format di atribut data-flatpickr
+        locale: 'id', // Gunakan lokalisasi Bahasa Indonesia
+      });
     </script>
   </body>
 </html>

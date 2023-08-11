@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { ensureAuthenticated } = require('../config/checkAuth');
 
+//------------ User Model ------------//
+const User = require('../models/User');
+
 // Welcome Route
 router.get('/', (req, res) => {
   res.render('login');
@@ -57,6 +60,41 @@ router.get('/edit-profile', ensureAuthenticated, (req, res) =>
   })
 );
 
+// Route to handle profile updates
+router.post('/edit-profile', ensureAuthenticated, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { username, name, bio, address, website, instagram, twitter, facebook, linkedin, aboutme, university, contact, bod, hobby } = req.body;
+
+    // Find the user by their ID and update the fields
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        username,
+        name,
+        bio,
+        address,
+        website,
+        instagram,
+        twitter,
+        facebook,
+        linkedin,
+        aboutme,
+        university,
+        contact,
+        bod,
+        hobby,
+      },
+      { new: true }
+    );
+
+    res.redirect('/user-profile');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 router.get('/file-manager', ensureAuthenticated, (req, res) =>
   res.render('theme/file-manager', {
     layout: 'theme/layout',
@@ -74,6 +112,7 @@ router.get('/to-do', ensureAuthenticated, (req, res) =>
 router.get('/user-profile', ensureAuthenticated, (req, res) =>
   res.render('theme/user-profile', {
     layout: 'theme/layout',
+    user: req.user,
   })
 );
 
