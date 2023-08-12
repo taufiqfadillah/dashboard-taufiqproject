@@ -2,7 +2,7 @@ var DropzoneExample = (function () {
   var DropzoneDemos = function () {
     Dropzone.options.singleFileUpload = {
       paramName: 'image',
-      url: 'add-post',
+      url: '/add-post',
       maxFiles: 1,
       maxFilesize: 5,
       addRemoveLinks: true,

@@ -46,7 +46,8 @@ const upload = multer({ storage: storage });
 
 router.post('/add-post', upload.single('image'), async (req, res) => {
   try {
-    const { title, type, category, content, image } = req.body;
+    const { title, type, category, content } = req.body;
+    const image = req.file ? req.file.originalname : '';
 
     const newBlog = new Blog({
       title,
@@ -66,17 +67,9 @@ router.post('/add-post', upload.single('image'), async (req, res) => {
   }
 });
 
-router.get('/blog-single', ensureAuthenticated, (req, res) =>
-  res.render('theme/blog-single', {
-    title: 'Taufiq Project || Blog Single',
-    layout: 'theme/layout',
-    user: req.user,
-  })
-);
-
 router.get('/blog', ensureAuthenticated, (req, res) =>
   res.render('theme/blog', {
-    title: 'Taufiq Project || Blog',
+    title: 'Taufiq Project || My Blog',
     layout: 'theme/layout',
     user: req.user,
   })
