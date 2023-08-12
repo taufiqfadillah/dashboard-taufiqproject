@@ -29,55 +29,70 @@
             <h5>Post Edit</h5>
           </div>
           <div class="card-body add-post">
-            <form class="row needs-validation" novalidate="">
+            <form class="row needs-validation" action="add-post" method="post" enctype="multipart/form-data" novalidate>
               <div class="col-sm-12">
                 <div class="mb-3">
                   <label for="validationCustom01">Title:</label>
-                  <input class="form-control" id="validationCustom01" type="text" placeholder="Post Title" required="" />
+                  <input class="form-control" id="validationCustom01" name="title" type="text" placeholder="Post Title" required />
                   <div class="valid-feedback">Looks good!</div>
                 </div>
                 <div class="mb-3">
                   <label>Type:</label>
                   <div class="m-checkbox-inline">
-                    <label for="edo-ani"> <input class="radio_animated" id="edo-ani" type="radio" name="rdo-ani" checked="" />Text </label>
-                    <label for="edo-ani1"> <input class="radio_animated" id="edo-ani1" type="radio" name="rdo-ani" />Image </label>
-                    <label for="edo-ani2"> <input class="radio_animated" id="edo-ani2" type="radio" name="rdo-ani" checked="" />Audio </label>
-                    <label for="edo-ani3"> <input class="radio_animated" id="edo-ani3" type="radio" name="rdo-ani" />Video </label>
+                    <label for="type_hot"> <input class="radio_animated" id="type_hot" type="radio" name="type" value="Hot News" checked />Hot News </label>
+                    <label for="type_articles"> <input class="radio_animated" id="type_articles" type="radio" name="type" value="Articles" />Articles </label>
+                    <label for="type_resume"> <input class="radio_animated" id="type_resume" type="radio" name="type" value="Resume" />Resume </label>
+                    <label for="type_other"> <input class="radio_animated" id="type_other" type="radio" name="type" value="Other" />Other </label>
                   </div>
                 </div>
                 <div class="mb-3">
                   <div class="col-form-label">
                     Category:
-                    <select class="js-example-placeholder-multiple col-sm-12" multiple="multiple">
-                      <option value="AL">Lifestyle</option>
-                      <option value="WY">Travel</option>
+                    <select name="category" class="js-example-placeholder-multiple col-sm-12" multiple="multiple">
+                      <option value="Lifestyle">Lifestyle</option>
+                      <option value="Technology">Technology</option>
+                      <option value="Politics">Politics</option>
+                      <option value="Law">Law</option>
+                      <option value="Industry">Industry</option>
+                      <option value="Travel">Travel</option>
+                      <option value="Otomotif">Otomotif</option>
+                      <option value="Sport">Sport</option>
+                      <option value="Game">Game</option>
                     </select>
                   </div>
                 </div>
                 <div class="email-wrapper">
                   <div class="theme-form">
                     <div class="mb-3">
-                      <label>Content:</label>
-                      <textarea id="text-box" name="text-box" cols="10" rows="2"></textarea>
+                      <label for="content">Content:</label>
+                      <textarea id="text-box" name="content" cols="10" rows="2"></textarea>
                     </div>
                   </div>
                 </div>
               </div>
-            </form>
-            <form class="dropzone" id="singleFileUpload" action="/upload.php">
-              <div class="m-0 dz-message needsclick">
-                <i class="icon-cloud-up"></i>
-                <h6 class="mb-0">Drop files here or click to upload.</h6>
+              <label for="image">Features Image:</label>
+              <div class="card-body">
+                <div class="dropzone" id="singleFileUpload">
+                  <div class="dropzone-wrapper">
+                    <div class="dz-message needsclick">
+                      <i class="icon-cloud-up"></i>
+                      <h6>Drop files here or click to upload.</h6>
+                      <span class="note needsclick">(This is just a demo dropzone. Selected files are <strong>not</strong> actually uploaded.)</span>
+                    </div>
+                  </div>
+                  <input type="file" name="image" style="display: none" />
+                </div>
+              </div>
+              <div class="btn-showcase text-end">
+                <button class="btn btn-primary" type="submit">Post</button>
+                <input class="btn btn-light" type="reset" value="Discard" />
               </div>
             </form>
-            <div class="btn-showcase text-end">
-              <button class="btn btn-primary" type="submit">Post</button>
-              <input class="btn btn-light" type="reset" value="Discard" />
-            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
   <!-- Container-fluid Ends-->
 </div>

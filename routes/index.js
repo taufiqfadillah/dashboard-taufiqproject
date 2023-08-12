@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const { ensureAuthenticated } = require('../config/checkAuth');
 
 //------------ User Model ------------//
 const User = require('../models/User');
+
+//------------ Blog Model ------------//
+const Blog = require('../models/Blog');
 
 // Welcome Route
 router.get('/', (req, res) => {
@@ -19,6 +23,7 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
   })
 );
 
+// Add-Post
 router.get('/add-post', ensureAuthenticated, (req, res) =>
   res.render('theme/add-post', {
     title: 'Taufiq Project || Add Post',
@@ -26,6 +31,40 @@ router.get('/add-post', ensureAuthenticated, (req, res) =>
     user: req.user,
   })
 );
+
+// Configure multer for image upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'assets/dashboard/blog');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+router.post('/add-post', upload.single('image'), async (req, res) => {
+  try {
+    const { title, type, category, content, image } = req.body;
+
+    const newBlog = new Blog({
+      title,
+      type,
+      category,
+      content,
+      image,
+      author: req.user.name,
+    });
+
+    const savedBlog = await newBlog.save();
+    console.log('Saved Blog:', savedBlog);
+    res.redirect('/blog');
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).render('/add-post', { message: 'An error occurred while adding the post.' });
+  }
+});
 
 router.get('/blog-single', ensureAuthenticated, (req, res) =>
   res.render('theme/blog-single', {
