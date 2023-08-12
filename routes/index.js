@@ -47,7 +47,7 @@ const upload = multer({ storage: storage });
 router.post('/add-post', upload.single('image'), async (req, res) => {
   try {
     const { title, type, category, content } = req.body;
-    const image = req.file ? req.file.originalname : '';
+    const image = req.file ? req.file.originalname : ''; // Menggunakan req.file
 
     const newBlog = new Blog({
       title,
@@ -55,6 +55,7 @@ router.post('/add-post', upload.single('image'), async (req, res) => {
       category,
       content,
       image,
+      user: req.user._id,
       author: req.user.name,
     });
 
@@ -63,17 +64,24 @@ router.post('/add-post', upload.single('image'), async (req, res) => {
     res.redirect('/blog');
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).render('/add-post', { message: 'An error occurred while adding the post.' });
+    res.status(500).render('theme/add-post', { message: 'An error occurred while adding the post.' });
   }
 });
 
-router.get('/blog', ensureAuthenticated, (req, res) =>
-  res.render('theme/blog', {
-    title: 'Taufiq Project || My Blog',
-    layout: 'theme/layout',
-    user: req.user,
-  })
-);
+router.get('/blog', ensureAuthenticated, async (req, res) => {
+  try {
+    const blogs = await Blog.find().sort({ createdAt: -1 });
+    res.render('theme/blog', {
+      title: 'Taufiq Project || My Blog',
+      layout: 'theme/layout',
+      user: req.user,
+      blogs: blogs,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 router.get('/chat-video', ensureAuthenticated, (req, res) =>
   res.render('theme/comingsoon', {
@@ -93,7 +101,7 @@ router.get('/chat', ensureAuthenticated, (req, res) =>
 
 router.get('/edit-profile', ensureAuthenticated, (req, res) =>
   res.render('theme/edit-profile', {
-    title: 'Taufiq Project || Edit Profile',
+    title: 'Taufiq Project || Edit My Profile',
     layout: 'theme/layout',
     user: req.user,
   })
@@ -152,7 +160,7 @@ router.get('/to-do', ensureAuthenticated, (req, res) =>
 
 router.get('/user-profile', ensureAuthenticated, (req, res) =>
   res.render('theme/user-profile', {
-    title: 'Taufiq Project || User Profile',
+    title: 'Taufiq Project || My Profile',
     layout: 'theme/layout',
     user: req.user,
   })

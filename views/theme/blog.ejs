@@ -1,5 +1,6 @@
 <div class="page-body">
   <div class="container-fluid">
+    <% for (const blog of blogs) { %>
     <div class="page-title">
       <div class="row">
         <div class="col-6">
@@ -26,14 +27,14 @@
       <div class="col-xl-6 set-col-12 box-col-12">
         <div class="card">
           <div class="blog-box blog-shadow">
-            <img class="img-fluid" src="/assets/dashboard/images/blog/blog.jpg" alt="" />
+            <img class="img-fluid" src="/assets/dashboard/blog/<%= blog.image %>" alt="" />
             <div class="blog-details">
-              <p>25 July 2018</p>
-              <h4>Accusamus et iusto odio dignissimos ducimus qui blanditiis.</h4>
+              <p><%= blog.date %></p>
+              <a href="https://www.taufiqproject.my.id/blog-details?id=<%= blog.slug %>" target="_blank"><h4><%= blog.title %></h4></a>
               <ul class="blog-social">
-                <li><i class="icofont icofont-user"></i>Mark Jecno</li>
-                <li><i class="icofont icofont-thumbs-up"></i>02 Hits</li>
-                <li><i class="icofont icofont-ui-chat"></i>598 Comments</li>
+                <li><i class="icofont icofont-user"></i><%= blog.author %></li>
+                <li><i class="icofont icofont-thumbs-up"></i><%= blog.likes %> Likes</li>
+                <li><i class="icofont icofont-ui-chat"></i><%= blog.comments %> Comments</li>
               </ul>
             </div>
           </div>
@@ -146,4 +147,5 @@
     </div>
   </div>
   <!-- Container-fluid Ends-->
+  <% } %>
 </div>

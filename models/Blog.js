@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
+const { format } = require('date-fns');
 
 const blogSchema = new mongoose.Schema(
   {
@@ -25,9 +27,41 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    date: {
+      type: String,
+    },
+    user: {
+      type: String,
+      required: true,
+    },
+    slug: {
+      type: String,
+      unique: true,
+    },
+    comments: {
+      type: Number,
+      default: 0,
+    },
+    shares: {
+      type: Number,
+      default: 0,
+    },
+    likes: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
+
+blogSchema.pre('save', function (next) {
+  const currentDate = new Date();
+  this.date = currentDate;
+
+  this.slug = slugify(this.title, { lower: true, remove: /[*+~.()'"!:@]/g });
+
+  next();
+});
 
 const Blog = mongoose.model('Blog', blogSchema);
 
