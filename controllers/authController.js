@@ -41,6 +41,8 @@ exports.registerHandle = async (req, res) => {
     });
     const accessToken = oauth2Client.getAccessToken();
     const token = jwt.sign({ name, email, password }, JWT_KEY, { expiresIn: '30m' });
+    const emailData = { clientUrl: CLIENT_URL, token };
+    const verificationEmailHtml = await ejs.renderFile(path.join(__dirname, '../views/email/email-verification.ejs'), emailData);
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
