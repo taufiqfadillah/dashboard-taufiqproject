@@ -9,6 +9,9 @@ const User = require('../models/User');
 //------------ Blog Model ------------//
 const Blog = require('../models/Blog');
 
+//------------ To-do Model ------------//
+const Todo = require('../models/ToDo');
+
 // Welcome Route
 router.get('/', (req, res) => {
   res.render('login');
@@ -171,13 +174,74 @@ router.get('/file-manager', ensureAuthenticated, (req, res) =>
   })
 );
 
-router.get('/to-do', ensureAuthenticated, (req, res) =>
-  res.render('theme/to-do', {
-    title: 'Taufiq Project || To-Do',
-    layout: 'theme/layout',
-    user: req.user,
-  })
-);
+// ToDo Routes
+router.get('/to-do', ensureAuthenticated, async (req, res) => {
+  try {
+    const todos = await Todo.find({ creator: req.user._id });
+    const completedCount = await Todo.countDocuments({ creator: req.user._id, status: 'Completed' });
+    const inProgressCount = await Todo.countDocuments({ creator: req.user._id, status: 'In Progress' });
+    const allTaskCount = todos.length;
+    const trashCount = await Todo.countDocuments({ creator: req.user._id, status: 'Trash' });
+
+    res.render('theme/to-do', {
+      title: 'Taufiq Project || To-Do',
+      layout: 'theme/layout',
+      user: req.user,
+      todos: todos,
+      completedCount: completedCount,
+      inProgressCount: inProgressCount,
+      allTaskCount: allTaskCount,
+      trashCount: trashCount,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.post('/add-task', ensureAuthenticated, async (req, res) => {
+  try {
+    const newTask = new Todo({
+      task: req.body.task,
+      creator: req.user._id,
+    });
+    await newTask.save();
+    res.status(200).json({ message: 'Task added successfully!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.post('/update-status/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const todo = await Todo.findById(req.params.id);
+    if (todo) {
+      todo.status = 'Completed';
+      await todo.save();
+      res.status(200).json({ message: 'Task status updated successfully!' });
+    } else {
+      res.status(404).json({ message: 'Task not found' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const todo = await Todo.findByIdAndDelete(req.params.id);
+    if (todo) {
+      res.status(200).json({ message: 'Task deleted successfully!' });
+    } else {
+      res.status(404).json({ message: 'Task not found' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
 
 router.get('/user-profile', ensureAuthenticated, (req, res) =>
   res.render('theme/user-profile', {
