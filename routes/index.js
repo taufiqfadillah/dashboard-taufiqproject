@@ -47,7 +47,7 @@ const upload = multer({ storage: storage });
 router.post('/add-post', upload.single('image'), async (req, res) => {
   try {
     const { title, type, category, content } = req.body;
-    const image = req.file ? req.file.originalname : ''; // Menggunakan req.file
+    const image = req.file ? req.file.originalname : '';
 
     const newBlog = new Blog({
       title,
@@ -68,9 +68,12 @@ router.post('/add-post', upload.single('image'), async (req, res) => {
   }
 });
 
+// Blog Routes
 router.get('/blog', ensureAuthenticated, async (req, res) => {
   try {
-    const blogs = await Blog.find().sort({ createdAt: -1 });
+    const userId = req.user._id;
+
+    const blogs = await Blog.find({ user: userId }).sort({ createdAt: -1 }).limit(10);
     res.render('theme/blog', {
       title: 'Taufiq Project || My Blog',
       layout: 'theme/layout',
@@ -80,6 +83,24 @@ router.get('/blog', ensureAuthenticated, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Internal Server Error');
+  }
+});
+
+// Blog-Single Route
+router.get('/blog-single/:slug', ensureAuthenticated, async (req, res) => {
+  try {
+    const slug = req.params.slug; // Ambil slug dari parameter URL
+    const blog = await Blog.findOne({ slug }); // Ambil data blog dari database berdasarkan slug
+
+    res.render('theme/blog-single', {
+      title: `Taufiq Project || ${blog.title}`,
+      layout: 'theme/layout',
+      user: req.user,
+      blog: blog,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Terjadi Kesalahan Server');
   }
 });
 
