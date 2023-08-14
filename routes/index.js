@@ -251,4 +251,15 @@ router.get('/user-profile', ensureAuthenticated, (req, res) =>
   })
 );
 
+// Blog API
+router.get('/blogs', async (req, res) => {
+  try {
+    const blogs = await Blog.find().sort({ createdAt: -1 });
+    res.json(blogs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 module.exports = router;
