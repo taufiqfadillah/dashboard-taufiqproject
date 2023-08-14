@@ -276,6 +276,7 @@ router.get('/blogs', async (req, res) => {
       );
     });
 
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Set the CORS header
     res.type('json').send(`[${formattedBlogs.join(',\n\n')}]`);
   } catch (err) {
     console.error(err);
