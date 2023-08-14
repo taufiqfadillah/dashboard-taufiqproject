@@ -255,7 +255,28 @@ router.get('/user-profile', ensureAuthenticated, (req, res) =>
 router.get('/blogs', async (req, res) => {
   try {
     const blogs = await Blog.find().sort({ createdAt: -1 });
-    res.json(blogs);
+
+    const formattedBlogs = blogs.map((blog) => {
+      return JSON.stringify(
+        {
+          id: blog._id,
+          slug: blog.slug,
+          title: blog.title,
+          image: blog.image,
+          category: blog.category,
+          date: blog.date,
+          comments: blog.comments,
+          shares: blog.shares,
+          content: blog.content,
+          author: blog.author,
+          likes: blog.likes,
+        },
+        null,
+        2 // Indentation level for formatting
+      );
+    });
+
+    res.type('json').send(`[${formattedBlogs.join(',\n\n')}]`);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error' });
