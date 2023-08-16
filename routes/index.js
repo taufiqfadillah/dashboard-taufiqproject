@@ -272,11 +272,11 @@ router.get('/blogs', async (req, res) => {
           likes: blog.likes,
         },
         null,
-        2 // Indentation level for formatting
+        2
       );
     });
 
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Set the CORS header
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.type('json').send(`[${formattedBlogs.join(',\n\n')}]`);
   } catch (err) {
     console.error(err);
