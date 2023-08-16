@@ -92,8 +92,8 @@ router.get('/blog', ensureAuthenticated, async (req, res) => {
 // Blog-Single Route
 router.get('/blog-single/:slug', ensureAuthenticated, async (req, res) => {
   try {
-    const slug = req.params.slug; // Ambil slug dari parameter URL
-    const blog = await Blog.findOne({ slug }); // Ambil data blog dari database berdasarkan slug
+    const slug = req.params.slug;
+    const blog = await Blog.findOne({ slug });
 
     res.render('theme/blog-single', {
       title: `Taufiq Project || ${blog.title}`,
