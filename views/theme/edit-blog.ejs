@@ -1,0 +1,114 @@
+<div class="page-body">
+  <div class="container-fluid">
+    <div class="page-title">
+      <div class="row">
+        <div class="col-6">
+          <h3>Edit Post</h3>
+        </div>
+        <div class="col-6">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="/dashboard">
+                <svg class="stroke-icon">
+                  <use href="/assets/dashboard/svg/icon-sprite.svg#stroke-home"></use></svg
+              ></a>
+            </li>
+            <li class="breadcrumb-item">Blog</li>
+            <li class="breadcrumb-item active">Edit Post</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Container-fluid starts-->
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>Post Edit</h5>
+          </div>
+          <div class="card-body add-post">
+            <form class="row needs-validation" action="/update-blog/<%= blog._id %>" method="post" enctype="multipart/form-data" novalidate>
+              <div class="col-sm-12">
+                <div class="mb-3">
+                  <label for="validationCustom01">Title:</label>
+                  <input class="form-control" id="validationCustom01" name="title" type="text" placeholder="Post Title" value="<%= blog.title %>" required />
+                  <div class="valid-feedback">Looks good!</div>
+                </div>
+                <div class="mb-3">
+                  <label>Type:</label>
+                  <div class="m-checkbox-inline">
+                    <label for="type_hot"> <input class="radio_animated" id="type_hot" type="radio" name="type" value="Hot News" <% if (blog.type === 'Hot News') { %>checked<% } %> /> Hot News </label>
+                    <label for="type_articles"> <input class="radio_animated" id="type_articles" type="radio" name="type" value="Articles" <% if (blog.type === 'Articles') { %>checked<% } %> /> Articles </label>
+                    <label for="type_resume"> <input class="radio_animated" id="type_resume" type="radio" name="type" value="Resume" <% if (blog.type === 'Resume') { %>checked<% } %> /> Resume </label>
+                    <label for="type_other"> <input class="radio_animated" id="type_other" type="radio" name="type" value="Other" <% if (blog.type === 'Other') { %>checked<% } %> /> Other </label>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="col-form-label">
+                    <label for="category">Category:</label>
+                    <input type="hidden" id="selectedCategory" name="selectedCategory" value="<%= blog.category.join(',') %>" />
+                    <select name="category" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" required>
+                      <% categories.forEach(category => { %>
+                      <option value="<%= category %>" <% if (blog.category.includes(category)) { %>selected<% } %>><%= category %></option>
+                      <% }) %>
+                    </select>
+                    <div class="invalid-feedback">Please select a category.</div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="validationCustom01">Date:</label>
+                  <label for="validationCustom01">Date:</label>
+                  <input class="form-control" id="validationCustom01" name="date" type="date" required value="<%= new Date(blog.date).toISOString().split('T')[0] %>" />
+                  <div class="valid-feedback">Looks good!</div>
+                </div>
+                <div class="email-wrapper">
+                  <div class="theme-form">
+                    <div class="mb-3">
+                      <label for="content">Content:</label>
+                      <textarea id="text-box" name="content" cols="10" rows="2" required><%= blog.content %></textarea>
+                      <div class="invalid-feedback">Please provide content.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h4>Features Image</h4>
+                </div>
+                <div class="input-group">
+                  <input class="form-control mb-2" id="inputGroupFile03" type="file" name="image" value="<%= blog.image %>" aria-describedby="inputGroupFileAddon03" aria-label="Upload" onchange="previewImage(this)" />
+                  <div class="valid-feedback mb-2">Good picture!</div>
+                </div>
+                <div class="card-body">
+                  <img id="imagePreview" src="/assets/dashboard/blog/<%= blog.image %>" alt="Preview" style="max-width: 100%; max-height: 300px" />
+                </div>
+              </div>
+              <script>
+                function previewImage(input) {
+                  const imagePreview = document.getElementById('imagePreview');
+                  if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                      imagePreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                  } else {
+                    imagePreview.src = '<%= blog.image %>';
+                  }
+                }
+              </script>
+              <div class="btn-showcase text-end">
+                <button class="btn btn-primary" type="submit">Update Blog</button>
+                <input class="btn btn-light" type="reset" value="Discard" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container-fluid Ends-->
+</div>

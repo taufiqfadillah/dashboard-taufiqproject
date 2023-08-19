@@ -17,4 +17,10 @@ module.exports = {
     }
     res.redirect('/dashboard');
   },
+  blockAccessToRoot: function (req, res, next) {
+    if (req.isAuthenticated()) {
+      return res.redirect('/dashboard');
+    }
+    next();
+  },
 };

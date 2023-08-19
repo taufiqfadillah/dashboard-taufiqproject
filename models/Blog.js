@@ -29,6 +29,7 @@ const blogSchema = new mongoose.Schema(
     },
     date: {
       type: String,
+      required: true,
     },
     user: {
       type: String,
@@ -55,11 +56,7 @@ const blogSchema = new mongoose.Schema(
 );
 
 blogSchema.pre('save', function (next) {
-  const currentDate = new Date();
-  this.date = currentDate;
-
   this.slug = slugify(this.title, { lower: true, remove: /[*+~.()'"!:@]/g });
-
   next();
 });
 

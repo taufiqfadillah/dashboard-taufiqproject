@@ -1,0 +1,87 @@
+<div class="page-body">
+  <div class="container-fluid">
+    <div class="page-title">
+      <div class="row">
+        <div class="col-6">
+          <h4>Blog List</h4>
+        </div>
+        <div class="col-6">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="/">
+                <svg class="stroke-icon">
+                  <use href="/assets/dashboard/svg/icon-sprite.svg#stroke-home"></use></svg
+              ></a>
+            </li>
+            <li class="breadcrumb-item">Application</li>
+            <li class="breadcrumb-item active">Blog List</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Container-fluid starts-->
+  <div class="container-fluid basic_table">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-header">
+            <h4>Blogs List</h4>
+          </div>
+          <div class="card-block row">
+            <div class="col-sm-12 col-lg-12 col-xl-12">
+              <div class="table-responsive">
+                <table class="table light-card">
+                  <thead>
+                    <tr>
+                      <th scope="col">No</th>
+                      <th scope="col">Author</th>
+                      <th scope="col">Title</th>
+                      <th scope="col">Content</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% blogs.forEach((blog, index) => { %>
+                    <tr>
+                      <th scope="row"><%= index + 1 %></th>
+                      <td><%= blog.author %></td>
+                      <td><%= blog.title %></td>
+                      <td><%- blog.content.substr(0, 50) %>...</td>
+                      <td><%= blog.category.join(", ") %></td>
+                      <td><%= new Date(blog.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+                      <td>
+                        <a href="/edit-blog/<%= blog._id %>" class="iconbg badge-light-success">
+                          <i data-feather="edit">Edit</i>
+                        </a>
+                        <form id="deleteForm_<%= blog._id %>" action="/delete-blog/<%= blog._id %>" method="post" style="display: none">
+                          <input type="hidden" name="_method" value="POST" />
+                          <button type="submit">Delete</button>
+                        </form>
+                        <a href="#" class="iconbg badge-light-danger" onclick="deleteBlog('<%= blog._id %>')">
+                          <i data-feather="trash">Delete</i>
+                        </a>
+                        <script>
+                          function deleteBlog(blogId) {
+                            if (confirm('Are you sure you want to delete this blog?')) {
+                              const form = document.getElementById(`deleteForm_${blogId}`);
+                              form.submit();
+                            }
+                          }
+                        </script>
+                      </td>
+                    </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Container-fluid Ends-->
+</div>

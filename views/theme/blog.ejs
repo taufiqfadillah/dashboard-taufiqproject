@@ -30,7 +30,7 @@
           <div class="blog-box blog-shadow">
             <img class="img-fluid" src="../assets/dashboard/blog/<%= blog.image %>" alt="" />
             <div class="blog-details">
-              <p><%= blog.date %></p>
+              <p><%= new Date(blog.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
               <a href="/blog-single/<%= blog.slug %>">
                 <h4><%= blog.title %></h4>
               </a>

@@ -47,8 +47,9 @@
                 </div>
                 <div class="mb-3">
                   <div class="col-form-label">
-                    Category:
-                    <select name="category" class="js-example-placeholder-multiple col-sm-12" multiple="multiple">
+                    <label for="category">Category:</label>
+                    <input type="hidden" id="selectedCategory" name="selectedCategory" value="Lifestyle" />
+                    <select name="category" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" required>
                       <option value="Lifestyle">Lifestyle</option>
                       <option value="Technology">Technology</option>
                       <option value="Politics">Politics</option>
@@ -59,13 +60,20 @@
                       <option value="Sport">Sport</option>
                       <option value="Game">Game</option>
                     </select>
+                    <div class="invalid-feedback">Please select a category.</div>
                   </div>
+                </div>
+                <div class="mb-3">
+                  <label for="validationCustom01">Date:</label>
+                  <input class="form-control" id="validationCustom01" name="date" type="date" required />
+                  <div class="valid-feedback">Looks good!</div>
                 </div>
                 <div class="email-wrapper">
                   <div class="theme-form">
                     <div class="mb-3">
                       <label for="content">Content:</label>
-                      <textarea id="text-box" name="content" cols="10" rows="2"></textarea>
+                      <textarea id="text-box" name="content" cols="10" rows="2" required></textarea>
+                      <div class="invalid-feedback">Please provide content.</div>
                     </div>
                   </div>
                 </div>
@@ -75,7 +83,8 @@
                   <h4>Features Image</h4>
                 </div>
                 <div class="input-group">
-                  <input class="form-control mb-4" id="inputGroupFile03" type="file" name="image" aria-describedby="inputGroupFileAddon03" aria-label="Upload" />
+                  <input class="form-control mb-2" id="inputGroupFile03" type="file" name="image" aria-describedby="inputGroupFileAddon03" aria-label="Upload" required />
+                  <div class="valid-feedback mb-2">Good picture!</div>
                 </div>
               </div>
               <div class="btn-showcase text-end">

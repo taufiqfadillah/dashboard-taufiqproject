@@ -30,7 +30,10 @@
             <img class="img-fluid w-100" src="/assets/dashboard/blog/<%= blog.image %>" alt="blog-main" />
             <div class="blog-details">
               <ul class="blog-social">
-                <li><%= blog.date %></li>
+                <li>
+                  <span>Date:</span> <%= new Date(blog.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %>, <span>Time:</span> <%= new Date(blog.date).toLocaleTimeString("en-US", { hour: '2-digit',
+                  minute: '2-digit' }) %>
+                </li>
                 <li><i class="icofont icofont-user"></i><%= blog.author %></li>
                 <li><i class="icofont icofont-thumbs-up"></i><%= blog.likes %><span> Likes</span></li>
                 <li><i class="icofont icofont-ui-chat"></i><%= blog.comments %> Comments</li>

@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { ensureAuthenticated } = require('../config/checkAuth');
+const path = require('path');
+const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 
 //------------ User Model ------------//
 const User = require('../models/User');
@@ -13,7 +14,7 @@ const Blog = require('../models/Blog');
 const Todo = require('../models/ToDo');
 
 // Welcome Route
-router.get('/', (req, res) => {
+router.get('/', blockAccessToRoot, (req, res) => {
   res.render('login');
 });
 
@@ -35,10 +36,10 @@ router.get('/add-post', ensureAuthenticated, (req, res) =>
   })
 );
 
-// Configure multer for image upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'assets/dashboard/blog');
+    const absolutePath = path.join(__dirname, '../assets/dashboard/blog');
+    cb(null, absolutePath);
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -49,13 +50,14 @@ const upload = multer({ storage: storage });
 
 router.post('/add-post', upload.single('image'), async (req, res) => {
   try {
-    const { title, type, category, content } = req.body;
+    const { title, type, category, date, content } = req.body;
     const image = req.file ? req.file.originalname : '';
 
     const newBlog = new Blog({
       title,
       type,
       category,
+      date,
       content,
       image,
       user: req.user._id,
@@ -76,7 +78,7 @@ router.get('/blog', ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const blogs = await Blog.find({ user: userId }).sort({ createdAt: -1 }).limit(10);
+    const blogs = await Blog.find({ user: userId }).sort({ date: -1 }).limit(10);
     res.render('theme/blog', {
       title: 'Taufiq Project || My Blog',
       layout: 'theme/layout',
@@ -104,6 +106,97 @@ router.get('/blog-single/:slug', ensureAuthenticated, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Terjadi Kesalahan Server');
+  }
+});
+
+// Blog List Routes
+router.get('/blogs-list', ensureAuthenticated, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const blogs = await Blog.find({ user: userId }).sort({ createdAt: -1 }).limit(10);
+    res.render('theme/blogs-list', {
+      title: 'Taufiq Project || Blogs List',
+      layout: 'theme/layout',
+      user: req.user,
+      blogs: blogs,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Edit Blog Route
+router.get('/edit-blog/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const blog = await Blog.findById(blogId);
+
+    const categories = ['Lifestyle', 'Technology', 'Politics', 'Law', 'Industry', 'Travel', 'Otomotif', 'Sport', 'Game'];
+
+    res.render('theme/edit-blog', {
+      title: 'Taufiq Project || Edit Blog',
+      layout: 'theme/layout',
+      user: req.user,
+      blog: blog,
+      categories: categories,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Update Blog Route
+router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const { title, type, category, date, content } = req.body;
+
+    const existingBlog = await Blog.findById(blogId);
+
+    const image = req.file ? req.file.originalname : existingBlog.image;
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        title,
+        type,
+        category,
+        date,
+        content,
+        image,
+      },
+      { new: true }
+    );
+
+    res.redirect('/blog');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Delete Blog Routes
+router.post('/delete-blog/:id', ensureAuthenticated, async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const blog = await Blog.findById(blogId);
+
+    if (!blog) {
+      return res.status(404).send('Blog not found');
+    }
+
+    if (blog.user.toString() !== req.user._id.toString()) {
+      return res.status(403).send('Permission denied');
+    }
+    await blog.remove();
+
+    res.redirect('/blog');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
 });
 

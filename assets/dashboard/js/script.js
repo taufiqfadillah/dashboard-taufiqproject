@@ -420,8 +420,7 @@ bioTextarea.addEventListener('input', () => {
   wordCountDisplay.textContent = `Remaining characters: ${remainingCharacters}`;
 });
 
-// <!-- Lokalisasi Bahasa Indonesia -->
 flatpickr('[data-flatpickr]', {
-  dateFormat: 'd-m-Y', // Sesuaikan format dengan format di atribut data-flatpickr
-  locale: 'id', // Gunakan lokalisasi Bahasa Indonesia
+  dateFormat: 'd-m-Y',
+  locale: 'id',
 });
