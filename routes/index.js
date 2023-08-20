@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
@@ -38,8 +39,11 @@ router.get('/add-post', ensureAuthenticated, (req, res) =>
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const absolutePath = path.join(__dirname, '../assets/dashboard/blog');
-    cb(null, absolutePath);
+    const folderPath = path.join(__dirname, '../assets/dashboard/blog');
+    fs.chmod(folderPath, 0o777, (err) => {
+      if (err) throw err;
+    });
+    cb(null, folderPath);
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
