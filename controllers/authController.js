@@ -48,11 +48,11 @@ exports.registerHandle = async (req, res) => {
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: 'fuungt@gmail.com',
-        clientId: '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com',
-        clientSecret: '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',
-        refreshToken: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
-        accessToken,
+        user: process.env.EMAIL_USER,
+        clientId: process.env.GOOGLE_ID,
+        clientSecret: process.env.GOOGLE_SECRET,
+        refreshToken: process.env.GOOGLE_TOKEN,
+        accessToken: accessToken,
       },
     });
 
@@ -172,10 +172,10 @@ exports.forgotPassword = async (req, res) => {
           service: 'gmail',
           auth: {
             type: 'OAuth2',
-            user: 'fuungt@gmail.com',
-            clientId: '451170394890-c8b2pvcdhvnaf6ev3h0oggenom8ht7el.apps.googleusercontent.com',
-            clientSecret: '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',
-            refreshToken: '1//046rwKWlSNwioCgYIARAAGAQSNwF-L9IrWLvpErOQ1QsiwrmPKyNIagfAklItvLjGBCu_jlDajBw40IV6AIjYCeY8PHHbZcy2umc',
+            user: process.env.EMAIL_USER,
+            clientId: process.env.GOOGLE_ID,
+            clientSecret: process.env.GOOGLE_SECRET,
+            refreshToken: process.env.GOOGLE_TOKEN,
             accessToken: accessToken,
           },
         });
