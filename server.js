@@ -84,12 +84,10 @@ app.use(function (req, res, next) {
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 
-// Serializing the User to decide whichk key is to be kept in the Cookies
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Deserializing the User from the key in the Cookies
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
@@ -102,4 +100,4 @@ passport.deserializeUser(async (id, done) => {
 
 const PORT = process.env.PORT;
 
-app.listen(PORT, console.log(`Server running on PORT http://localhost:${PORT}`));
+app.listen(PORT, console.log(`Server running on PORT ${process.env.CLIENT_URL}`));

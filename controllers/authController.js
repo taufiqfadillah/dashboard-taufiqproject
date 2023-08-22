@@ -4,11 +4,13 @@ const bcryptjs = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const path = require('path');
 const ejs = require('ejs');
+const fs = require('fs');
 const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+//------------ Env Configure ------------//
 const JWT_KEY = process.env.JWT_KEY;
 const JWT_RESET_KEY = process.env.JWT_RESET_KEY;
 const CLIENT_URL = process.env.CLIENT_URL;
@@ -317,11 +319,36 @@ passport.use(
               email: profile.emails[0].value,
               verified: true,
               googleId: profile.id,
+              image: profile.photos[0].value, // Store Google profile image URL
               password: Math.random().toString(36).slice(-8),
               isLoggedIn: true,
             });
 
             await newUser.save();
+
+            const emailTemplatePath = path.join(__dirname, '../views/email/email-success.ejs');
+            const emailTemplate = fs.readFileSync(emailTemplatePath, 'utf-8');
+            const emailsuccessHtml = await ejs.render(emailTemplate, { user: newUser });
+
+            const transporter = nodemailer.createTransport({
+              service: 'gmail',
+              auth: {
+                type: 'OAuth2',
+                user: process.env.EMAIL_USER,
+                clientId: process.env.GOOGLE_ID,
+                clientSecret: process.env.GOOGLE_SECRET,
+                refreshToken: process.env.GOOGLE_TOKEN,
+                accessToken: accessToken,
+              },
+            });
+            const mailOptions = {
+              from: '"Taufiq Project || Welcome to Taufiqproject.my.id" <admin@taufiqproject.my.id>',
+              to: newUser.email,
+              subject: 'Welcome to Taufiq Project 🎉🎉🎉',
+              html: emailsuccessHtml,
+            };
+            await transporter.sendMail(mailOptions);
+
             return cb(null, newUser);
           }
         }

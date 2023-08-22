@@ -5,21 +5,17 @@ const multer = require('multer');
 const path = require('path');
 const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 
-//------------ User Model ------------//
+//------------ Model Configure ------------//
 const User = require('../models/User');
-
-//------------ Blog Model ------------//
 const Blog = require('../models/Blog');
-
-//------------ To-do Model ------------//
 const Todo = require('../models/ToDo');
 
-// Welcome Route
+//------------ Welcome Route ------------//
 router.get('/', blockAccessToRoot, (req, res) => {
   res.render('login');
 });
 
-// Dashboard Route
+//------------ Dashboard Route ------------//
 router.get('/dashboard', ensureAuthenticated, (req, res) =>
   res.render('theme/index', {
     title: 'Taufiq Project || Dashboard',
@@ -28,7 +24,8 @@ router.get('/dashboard', ensureAuthenticated, (req, res) =>
   })
 );
 
-// Add-Post
+//------------ Blog Route ------------//
+// Add Blog
 router.get('/add-post', ensureAuthenticated, (req, res) =>
   res.render('theme/add-post', {
     title: 'Taufiq Project || Add Post',
@@ -77,7 +74,7 @@ router.post('/add-post', upload.single('image'), async (req, res) => {
   }
 });
 
-// Blog Routes
+// Blog View
 router.get('/blog', ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -95,7 +92,7 @@ router.get('/blog', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Blog-Single Route
+// Blog-Single View
 router.get('/blog-single/:slug', ensureAuthenticated, async (req, res) => {
   try {
     const slug = req.params.slug;
@@ -113,7 +110,7 @@ router.get('/blog-single/:slug', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Blog List Routes
+// Blog List View
 router.get('/blogs-list', ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -131,7 +128,7 @@ router.get('/blogs-list', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Edit Blog Route
+// Edit Blog
 router.get('/edit-blog/:id', ensureAuthenticated, async (req, res) => {
   try {
     const blogId = req.params.id;
@@ -152,7 +149,7 @@ router.get('/edit-blog/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
-// Update Blog Route
+// Update Blog
 router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), async (req, res) => {
   try {
     const blogId = req.params.id;
@@ -182,7 +179,7 @@ router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), asy
   }
 });
 
-// Delete Blog Routes
+// Delete Blog
 router.post('/delete-blog/:id', ensureAuthenticated, async (req, res) => {
   try {
     const blogId = req.params.id;
@@ -204,6 +201,7 @@ router.post('/delete-blog/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
+//------------ Chat Route ------------//
 router.get('/chat-video', ensureAuthenticated, (req, res) =>
   res.render('theme/comingsoon', {
     title: 'Taufiq Project || Coming Soon😶‍🌫️',
@@ -220,6 +218,8 @@ router.get('/chat', ensureAuthenticated, (req, res) =>
   })
 );
 
+//------------ Profile Route ------------//
+// Edit Profile View
 router.get('/edit-profile', ensureAuthenticated, (req, res) =>
   res.render('theme/edit-profile', {
     title: 'Taufiq Project || Edit My Profile',
@@ -228,7 +228,7 @@ router.get('/edit-profile', ensureAuthenticated, (req, res) =>
   })
 );
 
-// Route to handle profile updates
+// Edit Profile Handle
 router.post('/edit-profile', ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -263,6 +263,16 @@ router.post('/edit-profile', ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Profile View
+router.get('/user-profile', ensureAuthenticated, (req, res) =>
+  res.render('theme/user-profile', {
+    title: 'Taufiq Project || My Profile',
+    layout: 'theme/layout',
+    user: req.user,
+  })
+);
+
+//------------ File Manager Route ------------//
 router.get('/file-manager', ensureAuthenticated, (req, res) =>
   res.render('theme/comingsoon', {
     title: 'Taufiq Project || Coming Soon😶‍🌫️',
@@ -271,7 +281,8 @@ router.get('/file-manager', ensureAuthenticated, (req, res) =>
   })
 );
 
-// ToDo Routes
+//------------ ToDo Route ------------//
+// Todo View
 router.get('/to-do', ensureAuthenticated, async (req, res) => {
   try {
     const todos = await Todo.find({ creator: req.user._id });
@@ -296,6 +307,7 @@ router.get('/to-do', ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Add Task
 router.post('/add-task', ensureAuthenticated, async (req, res) => {
   try {
     const newTask = new Todo({
@@ -310,6 +322,7 @@ router.post('/add-task', ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Update Task
 router.post('/update-status/:id', ensureAuthenticated, async (req, res) => {
   try {
     const todo = await Todo.findById(req.params.id);
@@ -326,6 +339,7 @@ router.post('/update-status/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
+// Delete Task
 router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
   try {
     const todo = await Todo.findByIdAndDelete(req.params.id);
@@ -340,15 +354,7 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
-router.get('/user-profile', ensureAuthenticated, (req, res) =>
-  res.render('theme/user-profile', {
-    title: 'Taufiq Project || My Profile',
-    layout: 'theme/layout',
-    user: req.user,
-  })
-);
-
-// Blog API
+//------------ Blog API Route ------------//
 router.get('/blogs', async (req, res) => {
   try {
     const blogs = await Blog.find().sort({ createdAt: -1 });
