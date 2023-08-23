@@ -2,13 +2,24 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const bcryptjs = require('bcryptjs');
 const nodemailer = require('nodemailer');
+const multer = require('multer');
 const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
 const ejs = require('ejs');
 const fs = require('fs');
 const { google } = require('googleapis');
 const OAuth2 = google.auth.OAuth2;
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+
+//------------ Supabase Configure ------------//
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+
+//------------ Multer Configure ------------//
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 //------------ Env Configure ------------//
 const JWT_KEY = process.env.JWT_KEY;
@@ -292,7 +303,7 @@ exports.logoutHandle = (req, res) => {
   res.redirect('/auth/login');
 };
 
-//------------ Google Login Handle ------------//
+//------------ Google Login Handle ------------/ /
 passport.use(
   new GoogleStrategy(
     {
@@ -317,6 +328,7 @@ passport.use(
             const newUser = new User({
               name: profile.displayName,
               email: profile.emails[0].value,
+              username: profile.displayName,
               verified: true,
               googleId: profile.id,
               image: profile.photos[0].value,
@@ -324,11 +336,26 @@ passport.use(
               isLoggedIn: true,
             });
 
+            const imageBuffer = await fetch(profile.photos[0].value).then((response) => response.buffer());
+            const fileName = `${newUser.name}_${Date.now()}.jpg`;
+            const { data, error } = await supabase.storage.from('taufiqproject/user').upload(fileName, imageBuffer, {
+              contentType: 'image/jpeg',
+            });
+
+            if (error) {
+              console.error(error);
+            } else {
+              newUser.image = fileName;
+            }
+
             await newUser.save();
 
             const emailTemplatePath = path.join(__dirname, '../views/email/email-success.ejs');
             const emailTemplate = fs.readFileSync(emailTemplatePath, 'utf-8');
             const emailsuccessHtml = await ejs.render(emailTemplate, { user: newUser });
+
+            const logoImage = fs.readFileSync('../assets/images/favicon.ico', { encoding: 'base64' });
+            const successImage = fs.readFileSync('../assets/images/success.png', { encoding: 'base64' });
 
             const transporter = nodemailer.createTransport({
               service: 'gmail',
@@ -341,13 +368,36 @@ passport.use(
                 accessToken: accessToken,
               },
             });
+
             const mailOptions = {
               from: '"Taufiq Project || Welcome to Taufiqproject.my.id" <admin@taufiqproject.my.id>',
               to: newUser.email,
               subject: 'Welcome to Taufiq Project 🎉🎉🎉',
               html: emailsuccessHtml,
+              attachments: [
+                {
+                  filename: 'logo.png',
+                  content: logoImage,
+                  cid: 'logo',
+                },
+                {
+                  filename: 'success.png',
+                  content: successImage,
+                  cid: 'success-image',
+                },
+              ],
             };
+
             await transporter.sendMail(mailOptions);
+
+            const successEmailOptions = {
+              from: '"Taufiq Project || Login Success" <admin@taufiqproject.my.id>',
+              to: newUser.email,
+              subject: 'Login Successful 🎉🎉🎉',
+              text: 'You have successfully logged in to your account!',
+            };
+
+            await transporter.sendMail(successEmailOptions);
 
             return cb(null, newUser);
           }

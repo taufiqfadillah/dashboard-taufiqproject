@@ -91,7 +91,11 @@
         </li>
         <li class="profile-nav onhover-dropdown pe-0 py-0">
           <div class="media profile-media">
+            <% if (user.image.includes('https')) { %>
+            <img class="b-r-10" src="<%= user.image %>" style="width: 35px; height: 35px" alt="<%= user.name %>" />
+            <% } else { %>
             <img class="b-r-10" src="https://gudrtdnruivalvgpfens.supabase.co/storage/v1/object/public/taufiqproject/user/<%= user.image %>" style="width: 35px; height: 35px" alt="<%= user.image %>" />
+            <% } %>
             <div class="media-body">
               <span><%= user.name %></span>
               <p class="mb-0 font-roboto"><%= user.role %> <i class="middle fa fa-angle-down"></i></p>
