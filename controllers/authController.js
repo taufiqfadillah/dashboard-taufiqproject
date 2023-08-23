@@ -58,7 +58,7 @@ exports.registerHandle = async (req, res) => {
     const emailData = { clientUrl: CLIENT_URL, token };
     const verificationEmailHtml = await ejs.renderFile(path.join(__dirname, '../views/email/email-verification.ejs'), emailData);
 
-    const logoImage = fs.readFileSync('../assets/images/favicon.ico', { encoding: 'base64' });
+    const logoImage = fs.readFileSync(path.join(__dirname, '../assets/images/favicon.ico'), { encoding: 'base64' });
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -186,7 +186,7 @@ exports.forgotPassword = async (req, res) => {
 
         const resetPasswordEmailHtml = await ejs.renderFile(path.join(__dirname, '../views/email/email-reset.ejs'), emailData);
 
-        const logoImage = fs.readFileSync('../assets/images/favicon.ico', { encoding: 'base64' });
+        const logoImage = fs.readFileSync(path.join(__dirname, '../assets/images/favicon.ico'), { encoding: 'base64' });
 
         user.resetLink = token;
         await user.save();
@@ -370,8 +370,8 @@ passport.use(
             const emailTemplate = fs.readFileSync(emailTemplatePath, 'utf-8');
             const emailsuccessHtml = await ejs.render(emailTemplate, { user: newUser });
 
-            const logoImage = fs.readFileSync('../assets/images/favicon.ico', { encoding: 'base64' });
-            const successImage = fs.readFileSync('../assets/images/success.png', { encoding: 'base64' });
+            const logoImage = fs.readFileSync(path.join(__dirname, '../assets/images/favicon.ico'), { encoding: 'base64' });
+            const successImage = fs.readFileSync(path.join(__dirname, '../assets/images/success.png'), { encoding: 'base64' });
 
             const transporter = nodemailer.createTransport({
               service: 'gmail',
