@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
+const { format } = require('date-fns');
 const multer = require('multer');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
@@ -12,9 +13,9 @@ const Blog = require('../models/Blog');
 const Todo = require('../models/ToDo');
 
 //------------ Supabase Configure ------------//
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 //------------ Welcome Route ------------//
 router.get('/', blockAccessToRoot, (req, res) => {
@@ -43,14 +44,18 @@ router.get('/add-post', ensureAuthenticated, (req, res) =>
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-router.post('/add-post', ensureAuthenticated, upload.single('image'), async (req, res) => {
+router.post('/add-post', upload.single('image'), async (req, res) => {
   try {
     const { title, type, category, date, content } = req.body;
     let image = '';
     if (req.file) {
-      const { data, error } = await supabase.storage.from('taufiqproject').upload(req.file.originalname, req.file.buffer);
+      const originalName = req.file.originalname;
+      const fileExt = path.extname(originalName);
+      const newFileName = `${req.user.name}_${title}_${format(new Date(), 'yyyyMMddHHmmss')}${fileExt}`;
+
+      const { data, error } = await supabase.storage.from('taufiqproject/blog').upload(newFileName, req.file.buffer);
       if (error) throw error;
-      image = req.file.originalname;
+      image = newFileName;
     }
     const newBlog = new Blog({
       title,
@@ -189,6 +194,16 @@ router.post('/delete-blog/:id', ensureAuthenticated, async (req, res) => {
     if (blog.user.toString() !== req.user._id.toString()) {
       return res.status(403).send('Permission denied');
     }
+
+    console.log('Deleting image:', blog.image);
+
+    if (blog.image) {
+      const { data, error } = await supabase.storage.from('taufiqproject/blog').remove(blog.image);
+      if (error) {
+        console.error('Error deleting image from Supabase:', error);
+      }
+    }
+
     await blog.remove();
 
     res.redirect('/blog');
