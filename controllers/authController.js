@@ -319,7 +319,7 @@ passport.use(
               email: profile.emails[0].value,
               verified: true,
               googleId: profile.id,
-              image: profile.photos[0].value, // Store Google profile image URL
+              image: profile.photos[0].value,
               password: Math.random().toString(36).slice(-8),
               isLoggedIn: true,
             });

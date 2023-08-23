@@ -13,6 +13,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.33.1",
     "autoprefixer": "^10.4.8",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -26,7 +27,6 @@
     "express": "^4.17.1",
     "express-ejs-layouts": "^2.5.0",
     "express-session": "^1.17.1",
-    "firebase-admin": "^11.10.1",
     "googleapis": "^63.0.0",
     "gulp-livereload": "^4.0.2",
     "gulp-pug": "^5.0.0",

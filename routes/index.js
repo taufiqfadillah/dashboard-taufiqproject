@@ -3,12 +3,33 @@ const router = express.Router();
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
 const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
+require('dotenv').config();
 
 //------------ Model Configure ------------//
 const User = require('../models/User');
 const Blog = require('../models/Blog');
 const Todo = require('../models/ToDo');
+
+//------------ Supabase Configure ------------//
+const supabase = createClient(process.env.SUPABASE_API_URL, process.env.SUPABASE_API_KEY);
+
+//------------ Multer Configure ------------//
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const folderPath = path.join(__dirname, '../assets/dashboard/blog');
+    fs.chmod(folderPath, 0o777, (err) => {
+      if (err) throw err;
+    });
+    cb(null, folderPath);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 //------------ Welcome Route ------------//
 router.get('/', blockAccessToRoot, (req, res) => {
@@ -34,25 +55,20 @@ router.get('/add-post', ensureAuthenticated, (req, res) =>
   })
 );
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const folderPath = path.join(__dirname, '../assets/dashboard/blog');
-    fs.chmod(folderPath, 0o777, (err) => {
-      if (err) throw err;
-    });
-    cb(null, folderPath);
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
 router.post('/add-post', upload.single('image'), async (req, res) => {
   try {
     const { title, type, category, date, content } = req.body;
     const image = req.file ? req.file.originalname : '';
+
+    const imageFilePath = path.join(__dirname, '../assets/dashboard/blog', image);
+    const { data, error } = await supabase.storage.from('taufiqproject/blog').upload(image, fs.createReadStream(imageFilePath));
+
+    if (error) {
+      console.error('Error uploading image:', error);
+      return res.status(500).render('theme/add-post', { message: 'An error occurred while uploading the image.' });
+    }
+
+    const imageUrl = data[0].url;
 
     const newBlog = new Blog({
       title,
@@ -60,7 +76,7 @@ router.post('/add-post', upload.single('image'), async (req, res) => {
       category,
       date,
       content,
-      image,
+      image: imageUrl,
       user: req.user._id,
       author: req.user.name,
     });
