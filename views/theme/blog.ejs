@@ -28,7 +28,7 @@
       <div class="col-xl-6 set-col-12 box-col-12">
         <div class="card">
           <div class="blog-box blog-shadow">
-            <img class="img-fluid" src="https://gudrtdnruivalvgpfens.supabase.co/storage/v1/object/public/taufiqproject/blog/<%= blog.image %>" alt="" />
+            <img class="img-fluid" src="https://gudrtdnruivalvgpfens.supabase.co/storage/v1/object/public/taufiqproject/blog/<%= blog.image %>" alt="<%= blog.title %>" loading="lazy" />
             <div class="blog-details">
               <p><%= new Date(blog.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
               <a href="/blog-single/<%= blog.slug %>">

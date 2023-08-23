@@ -30,13 +30,12 @@
             <div class="cardheader"></div>
             <div class="user-image">
               <div class="avatar">
-                <img alt="<%= user.image %>" src="/assets/dashboard/images/user/<%= user.image %>" id="userImage" />
+                <img alt="<%= user.image %>" src="https://gudrtdnruivalvgpfens.supabase.co/storage/v1/object/public/taufiqproject/user/<%= user.image %>" id="userImage" />
               </div>
               <div class="icon-wrapper">
-                <i class="icofont icofont-pencil-alt-5" id="editImageIcon"></i>
+                <a href="/edit-profile"><i class="icofont icofont-pencil-alt-5" id="editImageIcon"></i></a>
               </div>
             </div>
-            <input type="file" id="imageInput" style="display: none" accept="image/*" />
             <div class="info">
               <div class="row">
                 <div class="col-sm-6 col-lg-4 order-sm-1 order-xl-0">

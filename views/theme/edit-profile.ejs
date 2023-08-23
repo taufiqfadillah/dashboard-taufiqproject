@@ -23,7 +23,7 @@
   <!-- Container-fluid starts-->
   <div class="container-fluid">
     <div class="edit-profile">
-      <form action="/edit-profile" method="post">
+      <form action="/edit-profile" method="post" enctype="multipart/form-data" novalidate>
         <div class="row">
           <div class="col-xl-4">
             <div class="card">
@@ -37,21 +37,55 @@
                 <div class="row mb-2">
                   <div class="profile-title">
                     <div class="media">
-                      <img class="img-70 rounded-circle" alt="" src="/assets/dashboard/images/user/<%= user.image %>" id="userImage" />
+                      <img class="img-100 rounded-circle" src="https://gudrtdnruivalvgpfens.supabase.co/storage/v1/object/public/taufiqproject/user/<%= user.image %>" alt="<%= user.image %>" id="imagePreview" loading="lazy" />
                       <div class="media-body">
-                        <h5 class="mb-1"><%=user.name%></h5>
+                        <h5 class="mb-1"><%= user.name %></h5>
                         <p><%= user.role %></p>
                       </div>
                     </div>
+                    <div class="input-group">
+                      <input class="form-control" id="inputGroupFile03" type="file" name="image" value="<%= user.image %>" aria-describedby="inputGroupFileAddon03" aria-label="Upload" onchange="previewImage(this)" />
+                      <button type="button" class="btn btn-danger btn-sm" onclick="clearImageInput()">Clear</button>
+                    </div>
                   </div>
                 </div>
+                <script>
+                  const originalImageSrc = 'https://gudrtdnruivalvgpfens.supabase.co/storage/v1/object/public/taufiqproject/user/<%= user.image %>';
+
+                  function previewImage(input) {
+                    const imagePreview = document.getElementById('imagePreview');
+                    const clearButton = document.querySelector('.btn-danger');
+
+                    if (input.files && input.files[0]) {
+                      const reader = new FileReader();
+                      reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        clearButton.style.display = 'block';
+                      };
+                      reader.readAsDataURL(input.files[0]);
+                    } else {
+                      imagePreview.src = originalImageSrc;
+                      clearButton.style.display = 'none';
+                    }
+                  }
+
+                  function clearImageInput() {
+                    const imagePreview = document.getElementById('imagePreview');
+                    const inputImage = document.getElementById('inputGroupFile03');
+                    const clearButton = document.querySelector('.btn-danger');
+
+                    imagePreview.src = originalImageSrc;
+                    inputImage.value = '';
+                    clearButton.style.display = 'none';
+                  }
+                </script>
                 <div class="mb-3">
                   <h6 class="form-label">Bio</h6>
                   <textarea class="form-control" name="bio" rows="5" id="bioTextarea"><%= user.bio %></textarea>
                   <div id="wordCount">Remaining characters: 2000</div>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">Email-Address</label>
+                  <label class="form-label">Email Address</label>
                   <input class="form-control" name="email" placeholder="<%= user.email %>" readonly />
                 </div>
                 <div class="mb-3">

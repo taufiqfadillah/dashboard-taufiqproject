@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
 const { format } = require('date-fns');
 const multer = require('multer');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
+const fileUpload = require('express-fileupload');
 const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
+const sharp = require('sharp');
+
+//------------ App Configure ------------//
+const app = express();
+app.use(fileUpload());
 
 //------------ Model Configure ------------//
 const User = require('../models/User');
@@ -44,14 +49,14 @@ router.get('/add-post', ensureAuthenticated, (req, res) =>
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-router.post('/add-post', upload.single('image'), async (req, res) => {
+router.post('/add-post', ensureAuthenticated, upload.single('image'), async (req, res) => {
   try {
     const { title, type, category, date, content } = req.body;
     let image = '';
     if (req.file) {
       const originalName = req.file.originalname;
       const fileExt = path.extname(originalName);
-      const newFileName = `${req.user.name}_${title}_${format(new Date(), 'yyyyMMddHHmmss')}${fileExt}`;
+      const newFileName = `${title}_${format(new Date(), 'yyyyMMddHHmmss')}${fileExt}`;
 
       const { data, error } = await supabase.storage.from('taufiqproject/blog').upload(newFileName, req.file.buffer);
       if (error) throw error;
@@ -159,7 +164,13 @@ router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), asy
 
     const existingBlog = await Blog.findById(blogId);
 
-    const image = req.file ? req.file.originalname : existingBlog.image;
+    const imageExt = req.file ? path.extname(req.file.originalname) : path.extname(existingBlog.image);
+    const newImageName = `${title}_${format(new Date(), 'yyyyMMddHHmmss')}${imageExt}`;
+
+    if (req.file) {
+      const { data, error } = await supabase.storage.from('taufiqproject/blog').upload(newImageName, req.file.buffer);
+      if (error) throw error;
+    }
 
     const updatedBlog = await Blog.findByIdAndUpdate(
       blogId,
@@ -169,10 +180,17 @@ router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), asy
         category,
         date,
         content,
-        image,
+        image: req.file ? newImageName : existingBlog.image,
       },
       { new: true }
     );
+
+    if (req.file && existingBlog.image !== req.file.originalname) {
+      const { data, error } = await supabase.storage.from('taufiqproject/blog').remove(existingBlog.image);
+      if (error) {
+        console.error('Error deleting old image from Supabase:', error);
+      }
+    }
 
     res.redirect('/blog');
   } catch (error) {
@@ -241,12 +259,30 @@ router.get('/edit-profile', ensureAuthenticated, (req, res) =>
 );
 
 // Edit Profile Handle
-router.post('/edit-profile', ensureAuthenticated, async (req, res) => {
+router.post('/edit-profile', ensureAuthenticated, upload.single('image'), async (req, res) => {
   try {
     const userId = req.user._id;
     const { username, name, bio, address, website, instagram, twitter, facebook, linkedin, aboutme, university, contact, bod, hobby } = req.body;
+    let newImage = req.user.image;
 
-    // Find the user by their ID and update the fields
+    if (req.file) {
+      const file = req.file;
+      const fileName = `${req.user.name}_${Date.now()}`;
+
+      const processedImage = await sharp(file.buffer).resize({ width: 300, height: 300, fit: 'cover' }).toBuffer();
+
+      const { data, error } = await supabase.storage.from('taufiqproject/user').upload(fileName, processedImage, {
+        contentType: file.mimetype,
+      });
+
+      if (error) {
+        console.error(error);
+        return res.status(500).send('Failed to upload image');
+      }
+
+      newImage = fileName;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
@@ -264,6 +300,7 @@ router.post('/edit-profile', ensureAuthenticated, async (req, res) => {
         contact,
         bod,
         hobby,
+        image: newImage,
       },
       { new: true }
     );
