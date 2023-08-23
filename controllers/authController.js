@@ -4,6 +4,7 @@ const bcryptjs = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
 const path = require('path');
+const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');
 const ejs = require('ejs');
 const fs = require('fs');
@@ -57,6 +58,8 @@ exports.registerHandle = async (req, res) => {
     const emailData = { clientUrl: CLIENT_URL, token };
     const verificationEmailHtml = await ejs.renderFile(path.join(__dirname, '../views/email/email-verification.ejs'), emailData);
 
+    const logoImage = fs.readFileSync('../assets/images/favicon.ico', { encoding: 'base64' });
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -75,6 +78,11 @@ exports.registerHandle = async (req, res) => {
       subject: 'Account Verification: Taufiq Project🎉🎉🎁',
       generateTextFromHTML: true,
       html: verificationEmailHtml,
+      attachments: {
+        filename: 'logo.png',
+        content: logoImage,
+        cid: 'logo',
+      },
     };
 
     await transporter.sendMail(mailOptions);
@@ -178,6 +186,8 @@ exports.forgotPassword = async (req, res) => {
 
         const resetPasswordEmailHtml = await ejs.renderFile(path.join(__dirname, '../views/email/email-reset.ejs'), emailData);
 
+        const logoImage = fs.readFileSync('../assets/images/favicon.ico', { encoding: 'base64' });
+
         user.resetLink = token;
         await user.save();
 
@@ -198,6 +208,11 @@ exports.forgotPassword = async (req, res) => {
           to: email,
           subject: 'Account Password Reset: Taufiq Project 🤖🤖🤖',
           html: resetPasswordEmailHtml,
+          attachments: {
+            filename: 'logo.png',
+            content: logoImage,
+            cid: 'logo',
+          },
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -336,7 +351,8 @@ passport.use(
               isLoggedIn: true,
             });
 
-            const imageBuffer = await fetch(profile.photos[0].value).then((response) => response.buffer());
+            const imageResponse = await axios.get(profile.photos[0].value, { responseType: 'arraybuffer' });
+            const imageBuffer = Buffer.from(imageResponse.data);
             const fileName = `${newUser.name}_${Date.now()}.jpg`;
             const { data, error } = await supabase.storage.from('taufiqproject/user').upload(fileName, imageBuffer, {
               contentType: 'image/jpeg',
