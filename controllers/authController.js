@@ -79,7 +79,7 @@ exports.registerHandle = async (req, res) => {
       generateTextFromHTML: true,
       html: verificationEmailHtml,
       attachments: {
-        filename: 'logo.png',
+        filename: 'favicon.ico',
         content: logoImage,
         cid: 'logo',
       },
@@ -209,7 +209,7 @@ exports.forgotPassword = async (req, res) => {
           subject: 'Account Password Reset: Taufiq Project 🤖🤖🤖',
           html: resetPasswordEmailHtml,
           attachments: {
-            filename: 'logo.png',
+            filename: 'favicon.ico',
             content: logoImage,
             cid: 'logo',
           },
@@ -392,7 +392,7 @@ passport.use(
               html: emailsuccessHtml,
               attachments: [
                 {
-                  filename: 'logo.png',
+                  filename: 'favicon.ico',
                   content: logoImage,
                   cid: 'logo',
                 },
