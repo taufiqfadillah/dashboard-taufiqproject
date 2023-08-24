@@ -8,6 +8,7 @@ const fileUpload = require('express-fileupload');
 const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 const sharp = require('sharp');
 const bcrypt = require('bcryptjs');
+const sendNotification = require('./notification');
 
 //------------ App Configure ------------//
 const app = express();
@@ -75,6 +76,9 @@ router.post('/add-post', ensureAuthenticated, upload.single('image'), async (req
     });
     const savedBlog = await newBlog.save();
     console.log('Saved Blog:', savedBlog);
+
+    sendNotification('Blog Post Added', 'Your new blog post has been successfully added!');
+
     res.redirect('/blog');
   } catch (error) {
     console.error('Error:', error);
@@ -192,7 +196,7 @@ router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), asy
         console.error('Error deleting old image from Supabase:', error);
       }
     }
-
+    sendNotification('Blog Post Updated', 'Your blog post has been updated!');
     res.redirect('/blog');
   } catch (error) {
     console.error(error);
@@ -224,7 +228,7 @@ router.post('/delete-blog/:id', ensureAuthenticated, async (req, res) => {
     }
 
     await blog.remove();
-
+    sendNotification('Blog Post Deleted', 'Your blog post has been deleted!');
     res.redirect('/blog');
   } catch (error) {
     console.error(error);
@@ -305,7 +309,7 @@ router.post('/edit-profile', ensureAuthenticated, upload.single('image'), async 
       },
       { new: true }
     );
-
+    sendNotification('Edit Profile', 'Your profile has been edit successfully!');
     res.redirect('/user-profile');
   } catch (error) {
     console.error(error);
@@ -346,6 +350,8 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
     await User.findByIdAndUpdate(user._id, { password: hashedNewPassword });
+
+    sendNotification('Change Password', 'Your account has been successfully changed password!');
 
     res.redirect('/user-profile');
   } catch (error) {
@@ -397,6 +403,7 @@ router.post('/add-task', ensureAuthenticated, async (req, res) => {
       creator: req.user._id,
     });
     await newTask.save();
+    sendNotification('Todo Added', 'Your new todo has been successfully added!');
     res.status(200).json({ message: 'Task added successfully!' });
   } catch (err) {
     console.error(err);
@@ -411,6 +418,7 @@ router.post('/update-status/:id', ensureAuthenticated, async (req, res) => {
     if (todo) {
       todo.status = 'Completed';
       await todo.save();
+      sendNotification('Todo Updated', 'Your todo has been successfully updated!');
       res.status(200).json({ message: 'Task status updated successfully!' });
     } else {
       res.status(404).json({ message: 'Task not found' });
@@ -426,6 +434,7 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
   try {
     const todo = await Todo.findByIdAndDelete(req.params.id);
     if (todo) {
+      sendNotification('Todo Deleted', 'Your todo has been deleted!');
       res.status(200).json({ message: 'Task deleted successfully!' });
     } else {
       res.status(404).json({ message: 'Task not found' });
