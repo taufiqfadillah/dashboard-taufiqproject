@@ -7,6 +7,7 @@ const { createClient } = require('@supabase/supabase-js');
 const fileUpload = require('express-fileupload');
 const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 const sharp = require('sharp');
+const bcrypt = require('bcryptjs');
 
 //------------ App Configure ------------//
 const app = express();
@@ -320,6 +321,38 @@ router.get('/user-profile', ensureAuthenticated, (req, res) =>
     user: req.user,
   })
 );
+
+//------------ Change Password View ------------//
+router.get('/password-profile', ensureAuthenticated, (req, res) =>
+  res.render('theme/password-profile', {
+    title: 'Taufiq Project || Change Password',
+    layout: 'theme/layout',
+    user: req.user,
+  })
+);
+
+//------------ Change Password Route ------------//
+router.post('/change-password', ensureAuthenticated, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const user = req.user;
+    const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).render('theme/password-profile', { message: 'Current password is incorrect.' });
+    }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).render('theme/password-profile', { message: 'New password and confirm password do not match.' });
+    }
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.findByIdAndUpdate(user._id, { password: hashedNewPassword });
+
+    res.redirect('/user-profile');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 //------------ File Manager Route ------------//
 router.get('/file-manager', ensureAuthenticated, (req, res) =>
