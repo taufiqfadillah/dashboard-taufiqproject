@@ -40,7 +40,7 @@ app.get('/set-cookie', (req, res) => {
     sameSite: 'strict',
   });
 
-  res.send('Cookie telah diatur.');
+  res.send('Cookie has been set.');
 });
 
 //------------ Bodyparser Configuration ------------//
@@ -58,8 +58,8 @@ app.use(
     },
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
-      autoRemove: 'native', // remove expired sessions automatically
-      ttl: 7 * 24 * 60 * 60, // set session TTL to 7 days
+      autoRemove: 'native',
+      ttl: 7 * 24 * 60 * 60,
       stringify: false,
     }),
   })

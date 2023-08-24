@@ -62,29 +62,44 @@
           </div>
         </li>
         <li class="onhover-dropdown">
-          <div class="notification-box">
+          <div class="notification-box" onclick="showNotifications()">
             <svg>
-              <use href="/assets/dashboard/svg/icon-sprite.svg#notification"></use></svg
-            ><span class="badge rounded-pill badge-secondary">4 </span>
+              <use href="/assets/dashboard/svg/icon-sprite.svg#notification"></use>
+            </svg>
+            <span class="badge rounded-pill badge-secondary"></span>
           </div>
           <div class="onhover-show-div notification-dropdown">
-            <h6 class="f-18 mb-0 dropdown-title">Notitications</h6>
-            <ul>
-              <li class="b-l-primary border-4">
-                <p>Delivery processing <span class="font-danger">10 min.</span></p>
+            <h6 class="f-18 mb-0 dropdown-title">Notifications</h6>
+            <ul id="notification-list">
+              <li>
+                <p>No Notification Available</p>
               </li>
-              <li class="b-l-success border-4">
-                <p>Order Complete<span class="font-success">1 hr</span></p>
-              </li>
-              <li class="b-l-secondary border-4">
-                <p>Tickets Generated<span class="font-secondary">3 hr</span></p>
-              </li>
-              <li class="b-l-warning border-4">
-                <p>Delivery Complete<span class="font-warning">6 hr</span></p>
-              </li>
-              <li><a class="f-w-700" href="#">Check all</a></li>
             </ul>
           </div>
+          <script>
+            const sendNotification = require('../routes/notification.js');
+
+            function showNotifications() {
+              const title = 'New Notification Title';
+              const message = 'This is the notification message.';
+
+              sendNotification(title, message);
+
+              const notificationList = document.getElementById('notification-list');
+              const newNotification = document.createElement('li');
+              newNotification.innerHTML = `<p>${title}: ${message}</p>`;
+              notificationList.appendChild(newNotification);
+
+              const notificationBadge = document.getElementById('notification-badge');
+              const notificationCount = notificationList.children.length;
+
+              if (notificationCount > 0) {
+                notificationBadge.innerText = notificationCount;
+              } else {
+                notificationBadge.innerText = '';
+              }
+            }
+          </script>
         </li>
         <li class="maximize">
           <a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a>
@@ -127,7 +142,7 @@
             viewBox='0 0 24 24'
             fill='none'
             stroke='currentColor'
-            stroke-width='2'
+            stroke-widths='2'
             stroke-linecap='round'
             stroke-linejoin='round'
             class='feather feather-airplay m-0'
