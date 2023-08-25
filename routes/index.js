@@ -350,11 +350,7 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
     }
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    if (user.verified) {
-      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword, verified: false });
-    } else {
-      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword });
-    }
+    await User.findByIdAndUpdate(user._id, { password: hashedNewPassword, verified: false });
 
     sendNotification('Change Password', 'Your account has been successfully changed password!');
 
