@@ -85,7 +85,7 @@ const UserSchema = new mongoose.Schema(
     },
     verified: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     resetLink: {
       type: String,

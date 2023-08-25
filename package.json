@@ -1,7 +1,7 @@
 {
   "name": "taufiqproject-auth",
   "version": "1.0.0",
-  "description": "",
+  "description": "taufiqproject-auth beta",
   "main": "server.js",
   "engines": {
     "node": "18.x"
@@ -30,28 +30,21 @@
     "express-fileupload": "^1.4.0",
     "express-session": "^1.17.1",
     "googleapis": "^63.0.0",
-    "gulp-livereload": "^4.0.2",
-    "gulp-pug": "^5.0.0",
     "jsonwebtoken": "^9.0.1",
-    "livereload": "^0.9.3",
     "mongoose": "^5.13.20",
     "multer": "^1.4.5-lts.1",
     "node-notifier": "^10.0.1",
     "nodemailer": "^6.4.11",
-    "passport": "^0.4.0",
+    "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "sharp": "^0.32.5",
-    "slugify": "^1.6.6",
-    "vercel": "^24.2.4"
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "@vercel/node": "^2.15.8",
-    "browser-sync": "^2.26.7",
-    "gulp": "^4.0.2",
-    "gulp-sass": "^5.1.0",
-    "nodemon": "^2.0.4",
+    "nodemon": "^3.0.1",
     "sass": "^1.54.4"
   }
 }
