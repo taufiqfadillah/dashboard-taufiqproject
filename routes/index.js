@@ -340,6 +340,7 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
     const user = req.user;
+
     const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
     if (!isPasswordCorrect) {
       return res.status(400).render('theme/password-profile', { message: 'Current password is incorrect.' });
@@ -349,7 +350,11 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
     }
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    await User.findByIdAndUpdate(user._id, { password: hashedNewPassword });
+    if (user.verified) {
+      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword, verified: false });
+    } else {
+      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword });
+    }
 
     sendNotification('Change Password', 'Your account has been successfully changed password!');
 
