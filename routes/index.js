@@ -347,7 +347,7 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
 
     if (user.verified) {
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword });
+      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword, verified: false });
 
       sendNotification('Change Password', 'Your account has been successfully changed password!');
 
@@ -360,7 +360,7 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
       }
 
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword, verified: false });
+      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword });
 
       sendNotification('Change Password', 'Your account has been successfully changed password!');
 
