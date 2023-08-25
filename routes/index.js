@@ -338,23 +338,34 @@ router.get('/password-profile', ensureAuthenticated, (req, res) =>
 //------------ Change Password Route ------------//
 router.post('/change-password', ensureAuthenticated, async (req, res) => {
   try {
-    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const { newPassword, confirmPassword } = req.body;
     const user = req.user;
 
-    const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).render('theme/password-profile', { message: 'Current password is incorrect.' });
-    }
     if (newPassword !== confirmPassword) {
       return res.status(400).render('theme/password-profile', { message: 'New password and confirm password do not match.' });
     }
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    await User.findByIdAndUpdate(user._id, { password: hashedNewPassword, verified: false });
+    if (user.verified) {
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword });
 
-    sendNotification('Change Password', 'Your account has been successfully changed password!');
+      sendNotification('Change Password', 'Your account has been successfully changed password!');
 
-    res.redirect('/user-profile');
+      res.redirect('/user-profile');
+    } else {
+      const { currentPassword } = req.body;
+      const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordCorrect) {
+        return res.status(400).render('theme/password-profile', { message: 'Current password is incorrect.' });
+      }
+
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      await User.findByIdAndUpdate(user._id, { password: hashedNewPassword, verified: false });
+
+      sendNotification('Change Password', 'Your account has been successfully changed password!');
+
+      res.redirect('/user-profile');
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
