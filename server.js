@@ -6,7 +6,6 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
-const redisClient = require('./config/redis');
 
 const app = require('express')();
 app.use(cookieParser());
