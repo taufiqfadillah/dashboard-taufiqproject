@@ -5,6 +5,8 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const NodeCache = require('node-cache');
+const cache = new NodeCache();
 require('dotenv').config();
 
 const app = require('express')();
@@ -104,10 +106,19 @@ passport.deserializeUser(async (id, done) => {
 //------------ Blog API ------------//
 app.get('/blogs', async (req, res) => {
   try {
-    const blogs = await Blog.find({}, { _id: 1, slug: 1, title: 1, image: 1, category: 1, date: 1, comments: 1, shares: 1, content: 1, author: 1, likes: 1 }).sort({ createdAt: -1 }).lean();
+    const cachedData = cache.get('blogs');
+    if (cachedData) {
+      console.log('Get API data with node-cache...');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.json(cachedData);
+    } else {
+      const blogs = await Blog.find({}, { _id: 1, slug: 1, title: 1, image: 1, category: 1, date: 1, comments: 1, shares: 1, content: 1, author: 1, likes: 1 }).sort({ createdAt: -1 }).lean();
 
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.json(blogs);
+      cache.set('blogs', blogs);
+
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.json(blogs);
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error' });
