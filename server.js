@@ -6,6 +6,7 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
+const redisClient = require('./config/redis');
 
 const app = require('express')();
 app.use(cookieParser());
@@ -25,6 +26,9 @@ mongoose
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
   .then(() => console.log('Successfully connected to MongoDB👌👌👌'))
   .catch((err) => console.log(err));
+
+//------------ Model Configure ------------//
+const Blog = require('./models/Blog');
 
 //------------ EJS Configuration ------------//
 app.use(expressLayouts);
@@ -95,6 +99,19 @@ passport.deserializeUser(async (id, done) => {
   } catch (err) {
     console.log('Error in Finding User --> Passport');
     return done(err);
+  }
+});
+
+//------------ Blog API ------------//
+app.get('/blogs', async (req, res) => {
+  try {
+    const blogs = await Blog.find({}, { _id: 1, slug: 1, title: 1, image: 1, category: 1, date: 1, comments: 1, shares: 1, content: 1, author: 1, likes: 1 }).sort({ createdAt: -1 }).lean();
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json(blogs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 

@@ -9,7 +9,6 @@ const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth'
 const sharp = require('sharp');
 const bcrypt = require('bcryptjs');
 const sendNotification = require('./notification');
-const { redisConnection, redisClient } = require('../config/redis');
 
 //------------ App Configure ------------//
 const app = express();
@@ -459,26 +458,6 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
-  }
-});
-
-//------------ Blog API Route ------------//
-router.get('/blogs', async (req, res) => {
-  try {
-    const startTimestamp = Date.now();
-
-    const blogs = await Blog.find({}, { _id: 1, slug: 1, title: 1, image: 1, category: 1, date: 1, comments: 1, shares: 1, content: 1, author: 1, likes: 1 }).sort({ createdAt: -1 }).lean();
-
-    const endTimestamp = Date.now();
-    const executionTime = endTimestamp - startTimestamp;
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.json(blogs);
-
-    console.log(`API execution time: ${executionTime} ms`);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
