@@ -9,6 +9,7 @@ const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth'
 const sharp = require('sharp');
 const bcrypt = require('bcryptjs');
 const sendNotification = require('./notification');
+const { redisConnection, redisClient } = require('../config/redis');
 
 //------------ App Configure ------------//
 const app = express();
@@ -22,7 +23,11 @@ const Todo = require('../models/ToDo');
 //------------ Supabase Configure ------------//
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
+  auth: {
+    persistSession: false,
+  },
+});
 
 //------------ Welcome Route ------------//
 router.get('/', blockAccessToRoot, (req, res) => {
@@ -460,30 +465,17 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
 //------------ Blog API Route ------------//
 router.get('/blogs', async (req, res) => {
   try {
-    const blogs = await Blog.find().sort({ createdAt: -1 });
+    const startTimestamp = Date.now();
 
-    const formattedBlogs = blogs.map((blog) => {
-      return JSON.stringify(
-        {
-          id: blog._id,
-          slug: blog.slug,
-          title: blog.title,
-          image: blog.image,
-          category: blog.category,
-          date: blog.date,
-          comments: blog.comments,
-          shares: blog.shares,
-          content: blog.content,
-          author: blog.author,
-          likes: blog.likes,
-        },
-        null,
-        2
-      );
-    });
+    const blogs = await Blog.find({}, { _id: 1, slug: 1, title: 1, image: 1, category: 1, date: 1, comments: 1, shares: 1, content: 1, author: 1, likes: 1 }).sort({ createdAt: -1 }).lean();
+
+    const endTimestamp = Date.now();
+    const executionTime = endTimestamp - startTimestamp;
 
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.type('json').send(`[${formattedBlogs.join(',\n\n')}]`);
+    res.json(blogs);
+
+    console.log(`API execution time: ${executionTime} ms`);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error' });
