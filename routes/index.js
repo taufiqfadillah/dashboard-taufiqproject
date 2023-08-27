@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { format } = require('date-fns');
+const compression = require('compression');
 const multer = require('multer');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
@@ -9,10 +10,13 @@ const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth'
 const sharp = require('sharp');
 const bcrypt = require('bcryptjs');
 const sendNotification = require('./notification');
+const NodeCache = require('node-cache');
+const cache = new NodeCache();
 
 //------------ App Configure ------------//
 const app = express();
 app.use(fileUpload());
+app.use(compression());
 
 //------------ Model Configure ------------//
 const User = require('../models/User');
@@ -81,6 +85,8 @@ router.post('/add-post', ensureAuthenticated, upload.single('image'), async (req
     const savedBlog = await newBlog.save();
     console.log('Saved Blog:', savedBlog);
 
+    cache.del(`blog-${req.user._id}`);
+
     sendNotification('Blog Post Added', 'Your new blog post has been successfully added!');
 
     res.redirect('/blog');
@@ -95,7 +101,21 @@ router.get('/blog', ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user._id;
 
+    const cachedData = cache.get(`blog-${userId}`);
+    if (cachedData) {
+      console.log('Using cached data for blog view');
+      return res.render('theme/blog', {
+        title: 'Taufiq Project || My Blog',
+        layout: 'theme/layout',
+        user: req.user,
+        blogs: cachedData,
+      });
+    }
+
     const blogs = await Blog.find({ user: userId }).sort({ date: -1 }).limit(10);
+
+    cache.set(`blog-${userId}`, blogs);
+
     res.render('theme/blog', {
       title: 'Taufiq Project || My Blog',
       layout: 'theme/layout',
@@ -131,7 +151,22 @@ router.get('/blogs-list', ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user._id;
 
+    const cachedBlogs = cache.get(`blogs-list-${userId}`);
+    if (cachedBlogs) {
+      return res.render('theme/blogs-list', {
+        title: 'Taufiq Project || Blogs List',
+        layout: 'theme/layout',
+        user: req.user,
+        blogs: cachedBlogs,
+      });
+    }
+
     const blogs = await Blog.find({ user: userId }).sort({ createdAt: -1 }).limit(10);
+
+    if (blogs) {
+      cache.set(`blogs-list-${userId}`, blogs);
+    }
+
     res.render('theme/blogs-list', {
       title: 'Taufiq Project || Blogs List',
       layout: 'theme/layout',

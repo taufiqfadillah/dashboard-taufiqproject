@@ -2,6 +2,7 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 const flash = require('connect-flash');
+const compression = require('compression');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const path = require('path');
@@ -10,6 +11,7 @@ const cache = new NodeCache();
 require('dotenv').config();
 
 const app = require('express')();
+app.use(compression());
 app.use(cookieParser());
 
 //------------ Creating Session ------------//

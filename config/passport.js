@@ -6,7 +6,7 @@ const User = require('../models/User');
 
 module.exports = function (passport) {
   passport.use(
-    new LocalStrategy({ usernameField: 'usernameOrEmail' }, async (usernameOrEmail, password, done) => {
+    new LocalStrategy({ usernameField: 'usernameOrEmail', passReqToCallback: true }, async (req, usernameOrEmail, password, done) => {
       try {
         const user = await User.findOne({
           $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],

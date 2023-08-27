@@ -32,7 +32,7 @@ const JWT_RESET_KEY = process.env.JWT_RESET_KEY;
 const CLIENT_URL = process.env.CLIENT_URL;
 const GOOGLE_ID = process.env.GOOGLE_ID;
 const GOOGLE_SECRET = process.env.GOOGLE_SECRET;
-const GOOGLE_TOKEN = process.env.GOOGLE_TOKEN;
+const GOOGLE_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
 
 //------------ User Model ------------//
 const User = require('../models/User');
@@ -62,8 +62,6 @@ exports.registerHandle = async (req, res) => {
     const emailData = { clientUrl: CLIENT_URL, token };
     const verificationEmailHtml = await ejs.renderFile(path.join(__dirname, '../views/email/email-verification.ejs'), emailData);
 
-    const logoImage = fs.readFileSync(path.join(__dirname, '../assets/images/favicon.ico'), { encoding: 'base64' });
-
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -71,7 +69,7 @@ exports.registerHandle = async (req, res) => {
         user: process.env.EMAIL_USER,
         clientId: process.env.GOOGLE_ID,
         clientSecret: process.env.GOOGLE_SECRET,
-        refreshToken: process.env.GOOGLE_TOKEN,
+        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
         accessToken: accessToken,
       },
     });
@@ -79,14 +77,9 @@ exports.registerHandle = async (req, res) => {
     const mailOptions = {
       from: '"Taufiq Project || Email Verification" <admin@taufiqproject.my.id>',
       to: email,
-      subject: 'Account Verification: Taufiq Project🎉🎉🎁',
+      subject: 'Account Verification: Taufiq Project🎉🎉🎉',
       generateTextFromHTML: true,
       html: verificationEmailHtml,
-      attachments: {
-        filename: 'favicon.ico',
-        content: logoImage,
-        cid: 'logo',
-      },
     };
 
     await transporter.sendMail(mailOptions);
@@ -101,47 +94,33 @@ exports.registerHandle = async (req, res) => {
 };
 
 //------------ Activate Account Handle ------------//
-exports.activateHandle = (req, res) => {
+exports.activateHandle = async (req, res) => {
   const token = req.params.token;
-  let errors = [];
-  if (token) {
-    jwt.verify(token, JWT_KEY, (err, decodedToken) => {
-      if (err) {
-        req.flash('error_msg', 'Incorrect or expired link! Please register again.');
-        res.redirect('/auth/register');
-      } else {
-        const { name, email, password } = decodedToken;
-        User.findOne({ email: email }).then((user) => {
-          if (user) {
-            //------------ User already exists ------------//
-            req.flash('error_msg', 'Email ID already registered! Please log in.');
-            res.redirect('/auth/login');
-          } else {
-            const newUser = new User({
-              name,
-              email,
-              password,
-            });
 
-            bcryptjs.genSalt(10, (err, salt) => {
-              bcryptjs.hash(newUser.password, salt, (err, hash) => {
-                if (err) throw err;
-                newUser.password = hash;
-                newUser
-                  .save()
-                  .then((user) => {
-                    req.flash('success_msg', 'Account activated. You can now log in.');
-                    res.redirect('/auth/login');
-                  })
-                  .catch((err) => console.log(err));
-              });
-            });
-          }
-        });
-      }
+  try {
+    const decodedToken = jwt.verify(token, JWT_KEY);
+    const { name, email, password } = decodedToken;
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      req.flash('error_msg', 'Email ID already registered! Please log in.');
+      return res.redirect('/auth/login');
+    }
+
+    const hashedPassword = await bcryptjs.hash(password, 10);
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
     });
-  } else {
-    console.log('Account activation error!');
+
+    await newUser.save();
+    req.flash('success_msg', 'Account activated. You can now log in.');
+    res.redirect('/auth/login');
+  } catch (err) {
+    console.error(err);
+    req.flash('error_msg', 'Incorrect or expired link! Please register again.');
+    res.redirect('/auth/register');
   }
 };
 
@@ -163,15 +142,11 @@ exports.forgotPassword = async (req, res) => {
     });
   } else {
     try {
-      const user = await User.findOne({ email: email });
+      const user = await User.findOne({ email });
 
       if (!user) {
-        //------------ User does not exist ------------//
-        errors.push({ msg: 'User with Email ID does not exist!' });
-        res.render('forgot', {
-          errors,
-          email,
-        });
+        req.flash('error_msg', 'User with Email ID does not exist!');
+        return res.redirect('/auth/forgot');
       } else {
         const oauth2Client = new OAuth2(GOOGLE_ID, GOOGLE_SECRET, 'https://developers.google.com/oauthplayground');
         oauth2Client.setCredentials({
@@ -190,8 +165,6 @@ exports.forgotPassword = async (req, res) => {
 
         const resetPasswordEmailHtml = await ejs.renderFile(path.join(__dirname, '../views/email/email-reset.ejs'), emailData);
 
-        const logoImage = fs.readFileSync(path.join(__dirname, '../assets/images/favicon.ico'), { encoding: 'base64' });
-
         user.resetLink = token;
         await user.save();
 
@@ -202,7 +175,7 @@ exports.forgotPassword = async (req, res) => {
             user: process.env.EMAIL_USER,
             clientId: process.env.GOOGLE_ID,
             clientSecret: process.env.GOOGLE_SECRET,
-            refreshToken: process.env.GOOGLE_TOKEN,
+            refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
             accessToken: accessToken,
           },
         });
@@ -212,14 +185,9 @@ exports.forgotPassword = async (req, res) => {
           to: email,
           subject: 'Account Password Reset: Taufiq Project 🤖🤖🤖',
           html: resetPasswordEmailHtml,
-          attachments: {
-            filename: 'favicon.ico',
-            content: logoImage,
-            cid: 'logo',
-          },
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
+        await transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
             console.log(error);
             req.flash('error_msg', 'Something went wrong on our end. Please try again later.');
@@ -308,10 +276,28 @@ exports.resetPassword = (req, res) => {
 
 //------------ Login Handle ------------//
 exports.loginHandle = (req, res, next) => {
-  passport.authenticate('local', {
-    successRedirect: '/dashboard',
-    failureRedirect: '/auth/login',
-    failureFlash: true,
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      req.flash('error_msg', info.message);
+      return res.redirect('/auth/login');
+    }
+
+    req.logIn(user, async (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      if (req.body.rememberMe) {
+        req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000;
+      } else {
+        req.session.cookie.expires = false;
+      }
+
+      return res.redirect('/dashboard');
+    });
   })(req, res, next);
 };
 
@@ -329,22 +315,16 @@ passport.use(
     {
       clientID: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: 'https://dashboard.taufiqproject.my.id/auth/google/callback',
+      callbackURL: process.env.CALLBACK_URL,
     },
-    async function (accessToken, refreshToken, profile, cb) {
+    async (accessToken, refreshToken, profile, cb) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
 
-        if (user) {
-          return cb(null, user);
-        } else {
+        if (!user) {
           user = await User.findOne({ email: profile.emails[0].value });
 
-          if (user) {
-            user.googleId = profile.id;
-            await user.save();
-            return cb(null, user);
-          } else {
+          if (!user) {
             const newUser = new User({
               name: profile.displayName,
               email: profile.emails[0].value,
@@ -375,9 +355,6 @@ passport.use(
             const emailTemplate = fs.readFileSync(emailTemplatePath, 'utf-8');
             const emailsuccessHtml = await ejs.render(emailTemplate, { user: newUser });
 
-            const logoImage = fs.readFileSync(path.join(__dirname, '../assets/images/favicon.ico'), { encoding: 'base64' });
-            const successImage = fs.readFileSync(path.join(__dirname, '../assets/images/success.png'), { encoding: 'base64' });
-
             const transporter = nodemailer.createTransport({
               service: 'gmail',
               auth: {
@@ -385,7 +362,7 @@ passport.use(
                 user: process.env.EMAIL_USER,
                 clientId: process.env.GOOGLE_ID,
                 clientSecret: process.env.GOOGLE_SECRET,
-                refreshToken: process.env.GOOGLE_TOKEN,
+                refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
                 accessToken: accessToken,
               },
             });
@@ -395,18 +372,6 @@ passport.use(
               to: newUser.email,
               subject: 'Welcome to Taufiq Project 🎉🎉🎉',
               html: emailsuccessHtml,
-              attachments: [
-                {
-                  filename: 'favicon.ico',
-                  content: logoImage,
-                  cid: 'logo',
-                },
-                {
-                  filename: 'success.png',
-                  content: successImage,
-                  cid: 'success-image',
-                },
-              ],
             };
 
             await transporter.sendMail(mailOptions);
@@ -421,8 +386,13 @@ passport.use(
             await transporter.sendMail(successEmailOptions);
 
             return cb(null, newUser);
+          } else {
+            user.googleId = profile.id;
+            await user.save();
           }
         }
+
+        return cb(null, user);
       } catch (err) {
         return cb(err);
       }
