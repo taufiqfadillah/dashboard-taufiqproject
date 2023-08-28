@@ -4,6 +4,9 @@ const bcrypt = require('bcryptjs');
 //------------ Local User Model ------------//
 const User = require('../models/User');
 
+//------------ Redis Configuration ------------//
+const redisClient = require('./redis');
+
 module.exports = function (passport) {
   passport.use(
     new LocalStrategy({ usernameField: 'usernameOrEmail', passReqToCallback: true }, async (req, usernameOrEmail, password, done) => {
@@ -33,9 +36,21 @@ module.exports = function (passport) {
     done(null, user.id);
   });
 
-  passport.deserializeUser(function (id, done) {
-    User.findById(id, function (err, user) {
-      done(err, user);
-    });
+  passport.deserializeUser(async function (id, done) {
+    try {
+      const redisKey = `user-${id}`;
+      const cachedUser = await redisClient.get(redisKey);
+      if (cachedUser) {
+        return done(null, JSON.parse(cachedUser));
+      }
+
+      const user = await User.findById(id);
+      if (user) {
+        await redisClient.set(redisKey, JSON.stringify(user), 'EX', 60 * 60);
+      }
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
   });
 };

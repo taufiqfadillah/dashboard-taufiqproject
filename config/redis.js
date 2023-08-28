@@ -1,31 +1,25 @@
-const createClient = require('redis');
+const { createClient } = require('redis');
+require('dotenv').config();
 
-const redisClient = createClient({
+const redisConfig = {
   password: process.env.REDIS_PASSWORD,
   socket: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
   },
-});
+};
 
-redisClient.on('connect', () => {
-  console.log('Client connected to redis...');
-});
+const redisClient = createClient(redisConfig);
 
-redisClient.on('ready', () => {
-  console.log('Client connected to redis and ready to use...');
-});
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
 
-redisClient.on('error', (err) => {
-  console.log(err.message);
-});
-
-redisClient.on('end', () => {
-  console.log('Client disconnected from redis');
-});
-
-process.on('SIGINT', () => {
-  redisClient.quit();
-});
+redisClient
+  .connect()
+  .then(() => {
+    console.log('Successfully connected to Redis🚀🚀🚀');
+  })
+  .catch((err) => {
+    console.error('Redis Connection Error', err);
+  });
 
 module.exports = redisClient;

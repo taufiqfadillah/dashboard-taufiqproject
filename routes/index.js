@@ -10,8 +10,6 @@ const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth'
 const sharp = require('sharp');
 const bcrypt = require('bcryptjs');
 const sendNotification = require('./notification');
-const NodeCache = require('node-cache');
-const cache = new NodeCache();
 
 //------------ App Configure ------------//
 const app = express();
@@ -31,6 +29,9 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
     persistSession: false,
   },
 });
+
+//------------ Redis Configuration ------------//
+const redisClient = require('../config/redis');
 
 //------------ Welcome Route ------------//
 router.get('/', blockAccessToRoot, (req, res) => {
@@ -85,7 +86,8 @@ router.post('/add-post', ensureAuthenticated, upload.single('image'), async (req
     const savedBlog = await newBlog.save();
     console.log('Saved Blog:', savedBlog);
 
-    cache.del(`blog-${req.user._id}`);
+    await redisClient.del(`blog-${req.user._id}`);
+    await redisClient.del(`blogs-list-${req.user._id}`);
 
     sendNotification('Blog Post Added', 'Your new blog post has been successfully added!');
 
@@ -101,20 +103,20 @@ router.get('/blog', ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const cachedData = cache.get(`blog-${userId}`);
+    const redisKey = `blog-${userId}`;
+    const cachedData = await redisClient.get(redisKey);
     if (cachedData) {
-      console.log('Using cached data for blog view');
       return res.render('theme/blog', {
         title: 'Taufiq Project || My Blog',
         layout: 'theme/layout',
         user: req.user,
-        blogs: cachedData,
+        blogs: JSON.parse(cachedData),
       });
     }
 
     const blogs = await Blog.find({ user: userId }).sort({ date: -1 }).limit(10);
 
-    cache.set(`blog-${userId}`, blogs);
+    await redisClient.set(redisKey, JSON.stringify(blogs), 'EX', 60 * 60);
 
     res.render('theme/blog', {
       title: 'Taufiq Project || My Blog',
@@ -151,20 +153,21 @@ router.get('/blogs-list', ensureAuthenticated, async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const cachedBlogs = cache.get(`blogs-list-${userId}`);
+    const redisKey = `blogs-list-${userId}`;
+    const cachedBlogs = await redisClient.get(redisKey);
     if (cachedBlogs) {
       return res.render('theme/blogs-list', {
         title: 'Taufiq Project || Blogs List',
         layout: 'theme/layout',
         user: req.user,
-        blogs: cachedBlogs,
+        blogs: JSON.parse(cachedBlogs),
       });
     }
 
     const blogs = await Blog.find({ user: userId }).sort({ createdAt: -1 }).limit(10);
 
     if (blogs) {
-      cache.set(`blogs-list-${userId}`, blogs);
+      await redisClient.set(redisKey, JSON.stringify(blogs), 'EX', 60 * 60);
     }
 
     res.render('theme/blogs-list', {
@@ -302,12 +305,29 @@ router.get('/edit-profile', ensureAuthenticated, (req, res) =>
   })
 );
 
+// Edit Profile Check Username
+router.get('/check-username/:username', async (req, res) => {
+  const { username } = req.params;
+  try {
+    const existingUser = await User.findOne({ username });
+    res.json({ exists: !!existingUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // Edit Profile Handle
 router.post('/edit-profile', ensureAuthenticated, upload.single('image'), async (req, res) => {
   try {
     const userId = req.user._id;
     const { username, name, bio, address, website, instagram, twitter, facebook, linkedin, aboutme, university, contact, bod, hobby } = req.body;
     let newImage = req.user.image;
+
+    const existingUser = await User.findOne({ username });
+    if (existingUser && existingUser._id.toString() !== userId) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
 
     if (req.file) {
       const file = req.file;
