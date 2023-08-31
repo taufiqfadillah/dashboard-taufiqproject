@@ -136,7 +136,6 @@ function loadTasksFromServer() {
     type: 'GET',
     url: '/get-tasks',
     success: function (data) {
-      // Hapus task yang ada di daftar
       $('#todo-list').empty();
 
       data.todos.forEach((todo) => {

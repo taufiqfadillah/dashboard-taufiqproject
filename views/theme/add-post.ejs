@@ -86,7 +86,25 @@
                   <input class="form-control mb-2" id="inputGroupFile03" type="file" name="image" aria-describedby="inputGroupFileAddon03" aria-label="Upload" required />
                   <div class="valid-feedback mb-2">Good picture!</div>
                 </div>
+                <div class="image-preview mb-3">
+                  <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none" />
+                </div>
               </div>
+              <script>
+                const input = document.getElementById('inputGroupFile03');
+                const imagePreview = document.getElementById('imagePreview');
+
+                input.addEventListener('change', function () {
+                  const file = input.files[0];
+                  if (file) {
+                    imagePreview.style.display = 'block';
+                    imagePreview.src = URL.createObjectURL(file);
+                  } else {
+                    imagePreview.style.display = 'none';
+                    imagePreview.src = '#';
+                  }
+                });
+              </script>
               <div class="btn-showcase text-end">
                 <button class="btn btn-primary" type="submit">Post</button>
                 <input class="btn btn-light" type="reset" value="Discard" />

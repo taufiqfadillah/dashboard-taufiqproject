@@ -56,6 +56,28 @@ app.get('/set-cookie', (req, res) => {
 //------------ Bodyparser Configuration ------------//
 app.use(express.urlencoded({ extended: true }));
 
+//------------ Create HTTP Server ------------//
+const http = require('http').createServer(app);
+
+//------------ Initialize Socket.IO ------------//
+const io = require('socket.io')(http);
+
+//------------ Socket.io Configuration ------------//
+io.on('connection', (socket) => {
+  console.log('Successfully connected to Socket.io🫡🫡🫡');
+
+  socket.on('chat message', (msg) => {
+    console.log('Received message:', msg);
+    io.emit('chat message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Disconnected to Socket.io😒😒😒');
+  });
+});
+
+module.exports = io;
+
 //------------ Express session Configuration ------------//
 app.use(
   session({
@@ -94,20 +116,6 @@ app.use(function (req, res, next) {
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    return done(null, user);
-  } catch (err) {
-    console.log('Error in Finding User --> Passport');
-    return done(err);
-  }
-});
-
 //------------ Blog API ------------//
 app.get('/blogs', async (req, res) => {
   try {
@@ -126,6 +134,7 @@ app.get('/blogs', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT;
-
-app.listen(PORT, console.log(`Server running on PORT ${process.env.CLIENT_URL}`));
+const PORT = process.env.PORT || 3000;
+http.listen(PORT, () => {
+  console.log(`Server running on PORT ${PORT} || ${process.env.CLIENT_URL}`);
+});

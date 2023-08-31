@@ -211,12 +211,24 @@ router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), asy
 
     const existingBlog = await Blog.findById(blogId);
 
-    const imageExt = req.file ? path.extname(req.file.originalname) : path.extname(existingBlog.image);
-    const newImageName = `${title}_${format(new Date(), 'yyyyMMddHHmmss')}${imageExt}`;
+    let newImageName = existingBlog.image;
 
     if (req.file) {
+      const imageExt = path.extname(req.file.originalname);
+      newImageName = `${title}_${format(new Date(), 'yyyyMMddHHmmss')}${imageExt}`;
+
       const { data, error } = await supabase.storage.from('taufiqproject/blog').upload(newImageName, req.file.buffer);
       if (error) throw error;
+
+      if (existingBlog.image !== req.file.originalname) {
+        const oldImagePath = `blog/${existingBlog.image}`;
+        const { data: deleteData, error: deleteError } = await supabase.storage.from('taufiqproject').remove([oldImagePath]);
+        if (deleteError) {
+          console.error('Error deleting old image from Supabase:', deleteError);
+        } else {
+          console.log('Deleting old image from Supabase Successfully:', existingBlog.image);
+        }
+      }
     }
 
     const updatedBlog = await Blog.findByIdAndUpdate(
@@ -227,19 +239,17 @@ router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), asy
         category,
         date,
         content,
-        image: req.file ? newImageName : existingBlog.image,
+        image: newImageName,
       },
       { new: true }
     );
 
-    if (req.file && existingBlog.image !== req.file.originalname) {
-      const { data, error } = await supabase.storage.from('taufiqproject/blog').remove(existingBlog.image);
-      if (error) {
-        console.error('Error deleting old image from Supabase:', error);
-      }
-    }
+    await redisClient.del(`blog-${req.user._id}`);
+    await redisClient.del(`blogs-list-${req.user._id}`);
+
     sendNotification('Blog Post Updated', 'Your blog post has been updated!');
-    res.redirect('/blog');
+
+    res.redirect('/blogs-list');
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -260,17 +270,22 @@ router.post('/delete-blog/:id', ensureAuthenticated, async (req, res) => {
       return res.status(403).send('Permission denied');
     }
 
-    console.log('Deleting image:', blog.image);
-
     if (blog.image) {
-      const { data, error } = await supabase.storage.from('taufiqproject/blog').remove(blog.image);
+      const path = `blog/${blog.image}`;
+      const { data, error } = await supabase.storage.from('taufiqproject').remove([path]);
+
       if (error) {
-        console.error('Error deleting image from Supabase:', error);
+        console.error('Error deleting image from Supabase:', error.message);
       }
     }
 
     await blog.remove();
+
+    await redisClient.del(`blog-${req.user._id}`);
+    await redisClient.del(`blogs-list-${req.user._id}`);
+
     sendNotification('Blog Post Deleted', 'Your blog post has been deleted!');
+
     res.redirect('/blog');
   } catch (error) {
     console.error(error);
@@ -322,29 +337,37 @@ router.post('/edit-profile', ensureAuthenticated, upload.single('image'), async 
   try {
     const userId = req.user._id;
     const { username, name, bio, address, website, instagram, twitter, facebook, linkedin, aboutme, university, contact, bod, hobby } = req.body;
-    let newImage = req.user.image;
 
-    const existingUser = await User.findOne({ username });
-    if (existingUser && existingUser._id.toString() !== userId) {
-      return res.status(400).json({ error: 'Username already exists' });
-    }
+    let newImageName = req.user.image;
 
     if (req.file) {
       const file = req.file;
-      const fileName = `${req.user.name}_${Date.now()}`;
+      newImageName = `${req.user.name}_${Date.now()}`;
 
-      const processedImage = await sharp(file.buffer).resize({ width: 300, height: 300, fit: 'cover' }).toBuffer();
-
-      const { data, error } = await supabase.storage.from('taufiqproject/user').upload(fileName, processedImage, {
-        contentType: file.mimetype,
-      });
-
-      if (error) {
-        console.error(error);
-        return res.status(500).send('Failed to upload image');
+      if (newImageName !== req.user.image) {
+        const oldImagePath = `user/${req.user.image}`;
+        try {
+          await supabase.storage.from('taufiqproject').remove([oldImagePath]);
+          console.log('Successfully deleted old user image from Supabase:', req.user.image);
+        } catch (deleteError) {
+          console.error('Deleting old user image from Supabase Error:', deleteError.message);
+        }
       }
 
-      newImage = fileName;
+      const processedImage = await sharp(file.buffer).resize({ width: 300, height: 300, fit: 'cover' }).toBuffer();
+      try {
+        const { data, error } = await supabase.storage.from('taufiqproject/user').upload(newImageName, processedImage, {
+          contentType: file.mimetype,
+        });
+
+        if (error) {
+          console.error(error);
+          return res.status(500).send('Failed to upload image, Please Try Again Later.');
+        }
+      } catch (uploadError) {
+        console.error(uploadError);
+        return res.status(500).send('Failed to upload image, Please Try Again Later.');
+      }
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -364,11 +387,12 @@ router.post('/edit-profile', ensureAuthenticated, upload.single('image'), async 
         contact,
         bod,
         hobby,
-        image: newImage,
+        image: newImageName,
       },
       { new: true }
     );
-    sendNotification('Edit Profile', 'Your profile has been edit successfully!');
+
+    sendNotification('Edit Profile', 'Your profile has been successfully updated!');
     res.redirect('/user-profile');
   } catch (error) {
     console.error(error);

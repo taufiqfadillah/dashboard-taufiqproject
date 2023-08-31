@@ -276,28 +276,10 @@ exports.resetPassword = (req, res) => {
 
 //------------ Login Handle ------------//
 exports.loginHandle = (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      req.flash('error_msg', info.message);
-      return res.redirect('/auth/login');
-    }
-
-    req.logIn(user, async (err) => {
-      if (err) {
-        return next(err);
-      }
-
-      if (req.body.rememberMe) {
-        req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000;
-      } else {
-        req.session.cookie.expires = false;
-      }
-
-      return res.redirect('/dashboard');
-    });
+  passport.authenticate('local', {
+    successRedirect: '/dashboard',
+    failureRedirect: '/auth/login',
+    failureFlash: true,
   })(req, res, next);
 };
 
