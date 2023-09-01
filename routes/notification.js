@@ -6,7 +6,7 @@ const sendNotification = (title, message) => {
     title: `Taufiq Project || ${title}`,
     message: message,
     sound: true,
-    icon: path.join(__dirname, 'assets/images/favicon.ico'),
+    icon: path.join(__dirname, '../assets/images/logo.png'),
   });
 };
 
