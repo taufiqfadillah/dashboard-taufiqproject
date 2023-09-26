@@ -421,6 +421,14 @@ router.get('/user-profile', ensureAuthenticated, (req, res) =>
   })
 );
 
+router.get('/otp', ensureAuthenticated, (req, res) =>
+  res.render('theme/otp', {
+    title: 'Taufiq Project || OTP Verification',
+    layout: 'theme/layout',
+    user: req.user,
+  })
+);
+
 //------------ Change Password View ------------//
 router.get('/password-profile', ensureAuthenticated, (req, res) =>
   res.render('theme/password-profile', {
@@ -582,8 +590,10 @@ router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
       user: req.user,
       qrCodeDataURL,
       downloadFileName: `QR-${name}.png`,
+      name,
+      email,
+      organization,
     });
-    console.log('QR Code Data Link:', `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
@@ -606,6 +616,18 @@ router.get('/scan-qrcode', async (req, res) => {
   } catch (error) {
     console.error('Error saving data to MongoDB:', error);
     res.status(500).json({ error: 'Terjadi kesalahan saat menyimpan data.' });
+  }
+});
+
+router.get('/list-barcode', ensureAuthenticated, async (req, res) => {
+  try {
+    res.render('theme/list-barcode', {
+      title: 'Taufiq Project || List Barcode QR',
+      layout: 'theme/layout',
+      user: req.user,
+    });
+  } catch (error) {
+    console.error('Error rendering barcode page:', error);
   }
 });
 
