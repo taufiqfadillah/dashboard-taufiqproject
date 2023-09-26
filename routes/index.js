@@ -573,7 +573,7 @@ router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
   }
 });
 
-router.get('/scan-qrcode', ensureAuthenticated, async (req, res) => {
+router.get('/scan-qrcode', async (req, res) => {
   const qrCodeData = req.query.data;
 
   if (!qrCodeData) {
