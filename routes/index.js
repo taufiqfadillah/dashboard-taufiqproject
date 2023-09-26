@@ -556,39 +556,34 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
 router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
   const { email, name, organization } = req.body;
 
-  const qrCodeData = `${email}, ${name}, ${organization}`;
+  const qrCodeData = `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`;
 
   try {
-    // Generate QR code
     const qrCodeDataURL = await QRCode.toDataURL(qrCodeData);
 
-    // Kirim QR code ke halaman
     res.render('theme/barcode', {
       title: 'Taufiq Project || Barcode QR',
       layout: 'theme/layout',
       user: req.user,
       qrCodeDataURL,
-      scanQRCodeLink: `/scan-qrcode?data=${encodeURIComponent(qrCodeData)}`,
     });
-    console.log('QR Code Data Link:', `/scan-qrcode?data=${encodeURIComponent(qrCodeData)}`);
+    console.log('QR Code Data Link:', `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
 });
 
 router.get('/scan-qrcode', ensureAuthenticated, async (req, res) => {
-  const qrCodeData = req.query.data; // Ambil data dari query parameter
+  const qrCodeData = req.query.data;
 
   if (!qrCodeData) {
     return res.status(400).json({ error: 'Data QR code tidak ditemukan.' });
   }
 
   try {
-    // Split data dari QR code
-    const [email, name, organization] = qrCodeData.split(', ');
-
-    // Simpan data ke database MongoDB menggunakan model Barcode
+    const [email, name, organization] = qrCodeData.split('|');
     const barcodeData = new Barcode({ email, name, organization });
+
     await barcodeData.save();
 
     res.render('theme/success');
