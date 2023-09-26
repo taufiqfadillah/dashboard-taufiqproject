@@ -1133,6 +1133,10 @@ svg.f-light {
 
 /*====== Float css ends ======*/
 /*====== Overflow css starts ======*/
+.hidden {
+  display: none;
+}
+
 .o-hidden {
   overflow: hidden;
 }

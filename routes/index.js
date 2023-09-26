@@ -9,6 +9,7 @@ const fileUpload = require('express-fileupload');
 const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 const sharp = require('sharp');
 const bcrypt = require('bcryptjs');
+const QRCode = require('qrcode');
 const sendNotification = require('./notification');
 
 //------------ App Configure ------------//
@@ -20,6 +21,7 @@ app.use(compression());
 const User = require('../models/User');
 const Blog = require('../models/Blog');
 const Todo = require('../models/ToDo');
+const Barcode = require('../models/Barcode');
 
 //------------ Supabase Configure ------------//
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -32,6 +34,16 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
 
 //------------ Redis Configuration ------------//
 const redisClient = require('../config/redis');
+
+//------------ QR Code Configuration ------------//
+const generateQRCode = async (data) => {
+  try {
+    const qrCodeDataURL = await QRCode.toDataURL(data);
+    return qrCodeDataURL;
+  } catch (error) {
+    throw error;
+  }
+};
 
 //------------ Welcome Route ------------//
 router.get('/', blockAccessToRoot, (req, res) => {
@@ -537,6 +549,67 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
+  }
+});
+
+//------------ Barcode Route ------------//
+router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
+  const { email, name, organization } = req.body;
+
+  const qrCodeData = `${email}, ${name}, ${organization}`;
+
+  try {
+    // Generate QR code
+    const qrCodeDataURL = await QRCode.toDataURL(qrCodeData);
+
+    // Kirim QR code ke halaman
+    res.render('theme/barcode', {
+      title: 'Taufiq Project || Barcode QR',
+      layout: 'theme/layout',
+      user: req.user,
+      qrCodeDataURL,
+      scanQRCodeLink: `/scan-qrcode?data=${encodeURIComponent(qrCodeData)}`,
+    });
+    console.log('QR Code Data Link:', `/scan-qrcode?data=${encodeURIComponent(qrCodeData)}`);
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+  }
+});
+
+router.get('/scan-qrcode', ensureAuthenticated, async (req, res) => {
+  const qrCodeData = req.query.data; // Ambil data dari query parameter
+
+  if (!qrCodeData) {
+    return res.status(400).json({ error: 'Data QR code tidak ditemukan.' });
+  }
+
+  try {
+    // Split data dari QR code
+    const [email, name, organization] = qrCodeData.split(', ');
+
+    // Simpan data ke database MongoDB menggunakan model Barcode
+    const barcodeData = new Barcode({ email, name, organization });
+    await barcodeData.save();
+
+    res.render('theme/success');
+  } catch (error) {
+    console.error('Error saving data to MongoDB:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan saat menyimpan data.' });
+  }
+});
+
+router.get('/barcode', ensureAuthenticated, async (req, res) => {
+  try {
+    const qrCodeDataURL = '';
+
+    res.render('theme/barcode', {
+      title: 'Taufiq Project || Barcode QR',
+      layout: 'theme/layout',
+      user: req.user,
+      qrCodeDataURL,
+    });
+  } catch (error) {
+    console.error('Error rendering barcode page:', error);
   }
 });
 
