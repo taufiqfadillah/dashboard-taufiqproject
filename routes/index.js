@@ -553,6 +553,21 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
 });
 
 //------------ Barcode Route ------------//
+router.get('/barcode', ensureAuthenticated, async (req, res) => {
+  try {
+    const qrCodeDataURL = '';
+
+    res.render('theme/barcode', {
+      title: 'Taufiq Project || Barcode QR',
+      layout: 'theme/layout',
+      user: req.user,
+      qrCodeDataURL,
+    });
+  } catch (error) {
+    console.error('Error rendering barcode page:', error);
+  }
+});
+
 router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
   const { email, name, organization } = req.body;
 
@@ -561,13 +576,14 @@ router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
   try {
     const qrCodeDataURL = await QRCode.toDataURL(qrCodeData);
 
-    res.render('theme/barcode', {
-      title: 'Taufiq Project || Barcode QR',
+    res.render('theme/generate', {
+      title: 'Taufiq Project || Generate Barcode QR',
       layout: 'theme/layout',
       user: req.user,
       qrCodeDataURL,
+      downloadFileName: `QR-${name}.png`,
     });
-    // console.log('QR Code Data Link:', `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`);
+    console.log('QR Code Data Link:', `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
@@ -586,25 +602,10 @@ router.get('/scan-qrcode', async (req, res) => {
 
     await barcodeData.save();
 
-    res.render('theme/success');
+    res.render('theme/success', { name });
   } catch (error) {
     console.error('Error saving data to MongoDB:', error);
     res.status(500).json({ error: 'Terjadi kesalahan saat menyimpan data.' });
-  }
-});
-
-router.get('/barcode', ensureAuthenticated, async (req, res) => {
-  try {
-    const qrCodeDataURL = '';
-
-    res.render('theme/barcode', {
-      title: 'Taufiq Project || Barcode QR',
-      layout: 'theme/layout',
-      user: req.user,
-      qrCodeDataURL,
-    });
-  } catch (error) {
-    console.error('Error rendering barcode page:', error);
   }
 });
 

@@ -56,10 +56,18 @@
           </div>
         </div>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-3">
         <div class="card">
           <div class="card-header">
             <h4>QR Code Download</h4>
+          </div>
+          <div class="card-body d-flex flex-column align-items-center">
+            <div class="card-wrapper border rounded-3">
+              <img src="<%= qrCodeDataURL %>" class="w-100 h-auto" alt="QR Code" />
+            </div>
+            <div class="mt-3">
+              <a href="<%= qrCodeDataURL %>" download="<%= downloadFileName %>" class="btn btn-primary">Download</a>
+            </div>
           </div>
         </div>
       </div>
