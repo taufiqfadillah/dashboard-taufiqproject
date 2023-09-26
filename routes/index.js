@@ -567,7 +567,7 @@ router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
       user: req.user,
       qrCodeDataURL,
     });
-    console.log('QR Code Data Link:', `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`);
+    // console.log('QR Code Data Link:', `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`);
   } catch (error) {
     console.error('Error generating QR code:', error);
   }
