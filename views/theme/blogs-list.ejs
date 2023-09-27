@@ -28,41 +28,41 @@
           <div class="card-header">
             <h4>Blogs List</h4>
           </div>
-          <div class="card-block row">
-            <div class="col-sm-12 col-lg-12 col-xl-12">
-              <div class="table-responsive">
-                <table class="table light-card">
-                  <thead>
-                    <tr>
-                      <th scope="col">No</th>
-                      <th scope="col">Author</th>
-                      <th scope="col">Title</th>
-                      <th scope="col">Content</th>
-                      <th scope="col">Category</th>
-                      <th scope="col">Date</th>
-                      <th scope="col">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <% blogs.forEach((blog, index) => { %>
-                    <tr>
-                      <th scope="row"><%= index + 1 %></th>
-                      <td><%= blog.author %></td>
-                      <td><%= blog.title %></td>
-                      <td><%- blog.content.substr(0, 50) %>...</td>
-                      <td><%= blog.category.join(", ") %></td>
-                      <td><%= new Date(blog.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
-                      <td>
-                        <a href="/edit-blog/<%= blog._id %>" class="iconbg badge-light-success">
-                          <i data-feather="edit">Edit</i>
-                        </a>
-                        <form id="deleteForm_<%= blog._id %>" action="/delete-blog/<%= blog._id %>" method="post" style="display: none">
-                          <input type="hidden" name="_method" value="POST" />
-                          <button type="submit">Delete</button>
-                        </form>
-                        <a href="#" class="iconbg badge-light-danger" onclick="deleteBlog('<%= blog._id %>')">
-                          <i data-feather="trash">Delete</i>
-                        </a>
+          <div class="card-body">
+            <div class="dt-ext table-responsive">
+              <table class="display" id="export-button">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Author</th>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% blogs.forEach((blog, index) => { %>
+                  <tr>
+                    <th scope="row"><%= index + 1 %></th>
+                    <td><%= blog.author %></td>
+                    <td><%= blog.title %></td>
+                    <td><%- blog.content.substr(0, 50) %>...</td>
+                    <td><%= blog.category.join(", ") %></td>
+                    <td><%= new Date(blog.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+                    <td>
+                      <ul class="action">
+                        <li class="edit">
+                          <a href="/edit-blog/<%= blog._id %>"><i class="icon-pencil-alt"></i></a>
+                        </li>
+                        <li class="delete">
+                          <form id="deleteForm_<%= blog._id %>" action="/delete-blog/<%= blog._id %>" method="post" style="display: none">
+                            <input type="hidden" name="_method" value="POST" />
+                            <button type="submit">Delete</button>
+                          </form>
+                          <a href="#"><i class="icon-trash" onclick="deleteBlog('<%= blog._id %>')"></i></a>
+                        </li>
                         <script>
                           function deleteBlog(blogId) {
                             Swal.fire({
@@ -81,12 +81,23 @@
                             });
                           }
                         </script>
-                      </td>
-                    </tr>
-                    <% }) %>
-                  </tbody>
-                </table>
-              </div>
+                      </ul>
+                    </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>No</th>
+                    <th>Author</th>
+                    <th>Title</th>
+                    <th>Content</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </div>
         </div>

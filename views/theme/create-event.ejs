@@ -1,0 +1,158 @@
+<div class="page-body">
+  <div class="container-fluid">
+    <div class="page-title">
+      <div class="row">
+        <div class="col-6">
+          <h3>Project Create</h3>
+        </div>
+        <div class="col-6">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="index.html">
+                <svg class="stroke-icon">
+                  <use href="/assets/dashboard/svg/icon-sprite.svg#stroke-home"></use></svg
+              ></a>
+            </li>
+            <li class="breadcrumb-item">Apps</li>
+            <li class="breadcrumb-item active">Project Create</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Container-fluid starts-->
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <form action="/add-event" method="post" enctype="multipart/form-data" novalidate>
+              <div class="form theme-form">
+                <div class="row">
+                  <div class="col">
+                    <div class="mb-3">
+                      <label>Project Title</label>
+                      <input class="form-control" id="title" name="title" type="text" placeholder="Project name*" required />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label>Presenters</label>
+                      <input class="form-control" id="presenter" name="presenter" type="text" placeholder="Presenter name" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label>Status</label>
+                      <select class="form-select" id="status" name="status" required>
+                        <option selected>Ongoing</option>
+                        <option>Doing</option>
+                        <option>Done</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4">
+                    <div class="mb-3">
+                      <label>Location</label>
+                      <select class="form-select" id="location" name="location" required>
+                        <option selected>Asrama Putra</option>
+                        <option>Asrama Putri</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="mb-3">
+                      <label>Project Type</label>
+                      <select class="form-select" id="type" name="type" required>
+                        <option selected>Daring</option>
+                        <option>Luring</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="mb-3">
+                      <label>Capacity</label>
+                      <input class="form-control" id="capacity" name="capacity" type="number" placeholder="Enter number 1-1000" required />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-4">
+                    <div class="mb-3">
+                      <label>Department</label>
+                      <select class="form-select" id="department" name="department" required>
+                        <option selected>Kewargaan</option>
+                        <option>PSDM</option>
+                        <option>PM</option>
+                        <option>Infokom</option>
+                        <option>Sanggar</option>
+                        <option>Sport Club</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="mb-3">
+                      <label>Starting time</label>
+                      <input class="timepicker form-control" id="start-time" name="start-time" type="text" data-language="id" placeholder="00:00" required />
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="mb-3">
+                      <label>Ending time</label>
+                      <input class="timepicker form-control" id="end-time" name="end-time" type="text" data-language="id" placeholder="00:00" required />
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="mb-3">
+                      <label>Introduction</label>
+                      <textarea class="form-control" id="exampleFormControlTextarea4" name="introduction" rows="8"></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <label>Upload project file</label>
+                    <div class="input-group">
+                      <input class="form-control mb-2" id="inputGroupFile03" type="file" name="image" aria-describedby="inputGroupFileAddon03" aria-label="Upload" required />
+                      <div class="valid-feedback mb-2">Good picture!</div>
+                    </div>
+                    <div class="image-preview mb-3">
+                      <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none" />
+                    </div>
+                  </div>
+                </div>
+                <script>
+                  const input = document.getElementById('inputGroupFile03');
+                  const imagePreview = document.getElementById('imagePreview');
+
+                  input.addEventListener('change', function () {
+                    const file = input.files[0];
+                    if (file) {
+                      imagePreview.style.display = 'block';
+                      imagePreview.src = URL.createObjectURL(file);
+                    } else {
+                      imagePreview.style.display = 'none';
+                      imagePreview.src = '#';
+                    }
+                  });
+                </script>
+                <div class="row">
+                  <div class="col">
+                    <div class="text-end"><button class="btn btn-success me-3" type="submit">Add</button><button class="btn btn-danger">Cancel</button></div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Container-fluid Ends-->
+</div>

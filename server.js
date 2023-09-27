@@ -24,9 +24,6 @@ require('./config/passport')(passport);
 //------------ DB Configuration ------------//
 const db = require('./config/key').MongoURI;
 
-//------------ Redis Configuration ------------//
-const redisClient = require('./config/redis');
-
 //------------ Mongo Connection ------------//
 mongoose
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
@@ -98,23 +95,6 @@ app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 
 //------------ Blog API ------------//
-// Caching
-// app.get('/blogs', async (req, res) => {
-//   try {
-//     const redisKey = 'blogs';
-//     const blogs = await redisClient.get(redisKey);
-//     if (blogs) {
-//       return res.status(200).json(JSON.parse(blogs));
-//     } else {
-//       const blogs = await Blog.find().lean();
-//       await redisClient.set(redisKey, JSON.stringify(blogs), 'EX', 60 * 60);
-//       return res.status(200).json(blogs);
-//     }
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).json({ msg: 'Internal Server Error' });
-//   }
-// });
 app.get('/blogs', async (req, res) => {
   try {
     const blogs = await Blog.find().lean();

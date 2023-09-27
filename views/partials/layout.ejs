@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/vendors/select2.css" />
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/vendors/todo.css" />
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/vendors/datatables.css" />
-    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/vendors/jsgrid.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/vendors/datatable-extension.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css" />
     <!-- Plugins css Ends-->
@@ -43,6 +43,12 @@
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/responsive.css" />
     <!--  Date Picker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css"
+      integrity="sha512-/Ae8qSd9X8ajHk6Zty0m8yfnKJPlelk42HTJjOHDWs1Tjr41RfsSkceZ/8yyJGLkxALGMIYd5L2oGemy/x1PLg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
   </head>
   <body onload="startTime()">
     <!-- loader starts-->
@@ -71,28 +77,15 @@
         <!-- Content container -->
         <%- body %>
         <!-- Include footer component -->
-        <%- include('footer') %>
-      </div>
-      <!-- File Manager -->
-      <div class="icon-hover-bottom p-fixed fa-fa-icon-show-div opecity-0">
-        <div class="container-fluid">
-          <div class="row">
-            <div class="icon-popup">
-              <div class="close-icon"><i class="icofont icofont-close"></i></div>
-              <div class="icon-first"><i id="icon_main"></i></div>
-              <div class="icon-class"><label class="icon-title">data-feather</label><span id="fclass1"></span></div>
-              <div class="icon-last icon-last">
-                <label class="icon-title">Markup</label>
-                <div class="form-inline">
-                  <div class="form-group">
-                    <input class="inp-val form-control m-r-10" id="input_copy" type="text" value="" readonly="readonly" />
-                    <button class="btn btn-primary notification" onclick="myFunction()">Copy text</button>
-                  </div>
-                </div>
+        <footer class="footer">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-12 footer-copyright text-center">
+                <p class="mb-0">Copyright 2023 © Design With ❤️ Taufiq Project</p>
               </div>
             </div>
           </div>
-        </div>
+        </footer>
       </div>
     </div>
     <!-- latest jquery-->
@@ -137,10 +130,28 @@
     <script src="/assets/dahsboard/js/datatable/datatables/datatable.custom.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.js"></script>
     <script src="/assets/dashboard/js/form-wizard/verification.js"></script>
-    <script src="/assets/dashboard/js/jsgrid/jsgrid.min.js"></script>
-    <script src="/assets/dashboard/js/jsgrid/griddata.js"></script>
-    <script src="/assets/dashboard/js/jsgrid/jsgrid.js"></script>
     <!-- Plugins JS Ends-->
+    <!-- Datatable Extension -->
+    <script src="/assets/dashboard/js/datatable/datatables/jquery.dataTables.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.buttons.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/jszip.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/buttons.colVis.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/pdfmake.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/vfs_fonts.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.autoFill.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.select.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/buttons.bootstrap4.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/buttons.html5.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/buttons.print.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.bootstrap4.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.responsive.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/responsive.bootstrap4.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.keyTable.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.colReorder.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.fixedHeader.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.rowReorder.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/dataTables.scroller.min.js"></script>
+    <script src="/assets/dashboard/js/datatable/datatable-extension/custom.js"></script>
     <!-- Theme js-->
     <script src="/assets/dashboard/js/script.js"></script>
     <script src="/assets/dashboard/js/changepassword.js"></script>
@@ -152,5 +163,18 @@
     <!-- DatePicker -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.6/dist/flatpickr.min.js"></script>
     <script src="https://npmcdn.com/flatpickr@4.6.6/dist/l10n/id.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js"
+      integrity="sha512-2xXe2z/uA+2SyT/sTSt9Uq4jDKsT0lV4evd3eoE/oxKih8DSAsOF6LUb+ncafMJPAimWAXdu9W+yMXGrCVOzQA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"></script>
+    <script>
+      flatpickr('.timepicker', {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: 'H:i',
+        theme: 'airbnb',
+      });
+    </script>
   </body>
 </html>

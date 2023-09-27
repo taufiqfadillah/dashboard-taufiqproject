@@ -25,28 +25,141 @@
     <div class="row">
       <div class="col-sm-12">
         <div class="card">
-          <div class="card-header pb-0">
-            <h4 class="mb-3">List Barcode QR</h4>
+          <div class="card-header pb-0 card-no-border">
+            <h4>List Barcode QR</h4>
           </div>
           <div class="card-body">
-            <div class="sort-panel mb-3">
-              <label
-                >Sorting Field:
-                <select class="btn btn-primary dropdown-toggle btn-md pe-5" id="sortingField">
-                  <option>Id</option>
-                  <option>Product</option>
-                  <option>Order Id</option>
-                  <option>Price</option>
-                  <option>Quantity</option>
-                  <option>Shipped</option>
-                  <option>Total</option>
-                </select>
-              </label>
-              <div class="d-inline">
-                <button class="btn btn-md btn-secondary" id="sort" type="button">Sort</button>
-              </div>
+            <div class="dt-ext table-responsive">
+              <table class="display" id="export-button">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Organization</th>
+                    <th>Date</th>
+                    <th>Barcode</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% var count = 1; %> <% barcodes.forEach(function(barcode, index) { %>
+                  <tr>
+                    <td><%= count %></td>
+                    <td><%= barcode.name %></td>
+                    <td><%= barcode.email %></td>
+                    <td><%= barcode.organization %></td>
+                    <td><%= new Date(barcode.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) %></td>
+                    <td>
+                      <button class="btn btn-primary mx-auto mt-3" type="button" data-bs-toggle="modal" data-bs-target="#exampleModallaptop<%= barcode._id %>">Barcode-QR</button>
+                    </td>
+                    <td>
+                      <ul class="action">
+                        <li class="edit">
+                          <a href="#"><i class="icon-pencil-alt" data-bs-toggle="modal" data-bs-target="#exampleModalEdit<%= barcode._id %>"></i></a>
+                        </li>
+                        <li class="delete">
+                          <a href="javascript:void(0);" onclick="confirmDelete('<%= barcode._id %>')"><i class="icon-trash"></i></a>
+                        </li>
+                        <script>
+                          function confirmDelete(id) {
+                            Swal.fire({
+                              title: 'Are you sure?',
+                              text: "You won't be able to revert this!",
+                              icon: 'warning',
+                              showCancelButton: true,
+                              confirmButtonColor: '#3085d6',
+                              cancelButtonColor: '#d33',
+                              confirmButtonText: 'Yes, delete it!',
+                              cancelButtonText: 'No',
+                            }).then((result) => {
+                              if (result.isConfirmed) {
+                                window.location.href = `/delete-listbarcode/${id}`;
+                              }
+                            });
+                          }
+                        </script>
+                      </ul>
+                    </td>
+                  </tr>
+
+                  <!-- Modal Barcode-->
+                  <div class="modal fade" id="exampleModallaptop<%= barcode._id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModallaptop1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                      <div class="modal-content">
+                        <div class="col-xl-4 col-sm-6 col-xxl-12 col-ed-4 box-col-4">
+                          <div class="card social-profile">
+                            <div class="card-header">
+                              <h4>Barcode Output</h4>
+                            </div>
+                            <div class="card-body">
+                              <div class="social-details">
+                                <h5 class="mb-1"><a href="#"><%= barcode.name %></a></h5>
+                                <span class="f-light mb-1"><%= barcode.email %></span><br />
+                                <span class="f-light mb-2"><%= barcode.organization %></span>
+                                <div class="card-wrapper border rounded-3">
+                                  <img src="https://gudrtdnruivalvgpfens.supabase.co/storage/v1/object/public/taufiqproject/barcode/<%= barcode.barcode %>" class="w-100 h-auto" alt="QR Code" />
+                                </div>
+                                <div class="mt-4">
+                                  <a href="<%= downloadLinks[index] %>" download="<%= barcode.barcode %>" class="btn btn-primary">Download</a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Modal Edit -->
+                  <div class="modal fade" id="exampleModalEdit<%= barcode._id %>" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="exampleModalEdit" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                      <div class="modal-content dark-sign-up">
+                        <div class="modal-body social-profile text-start">
+                          <div class="modal-toggle-wrapper">
+                            <form class="row g-3 mt-2" action="/edit-listbarcode/<%= barcode._id %>" method="post">
+                              <div class="col-md-12 mb-2">
+                                <label class="form-label" for="name">Name</label>
+                                <input class="form-control" id="name" name="name" type="text" placeholder="Enter Your Name" value="<%= barcode.name %>" required />
+                              </div>
+                              <div class="col-md-12 mb-2">
+                                <label class="form-label" for="email">Email</label>
+                                <input class="form-control" id="email" name="email" type="email" placeholder="Enter Your Email" value="<%= barcode.email %>" required />
+                              </div>
+                              <div class="col-md-12 mb-2">
+                                <label class="form-label" for="organization">Organization</label>
+                                <input class="form-control" id="organization" name="organization" type="text" placeholder="Enter Your Organization" value="<%= barcode.organization %>" required />
+                              </div>
+                              <div class="col-12 mb-1">
+                                <div class="form-check">
+                                  <input class="form-check-input" id="checkout" type="checkbox" required />
+                                  <label class="form-check-label" for="checkout">Check me out</label>
+                                </div>
+                              </div>
+                              <div class="col-md-12 mb-2">
+                                <button class="btn btn-primary" type="submit">Save Changes</button>
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Close</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <% count++; %> <% }) %>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Organization</th>
+                    <th>Date</th>
+                    <th>Barcode</th>
+                    <th>Action</th>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
-            <div class="js-shorting" id="sorting-table"></div>
           </div>
         </div>
       </div>
