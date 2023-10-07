@@ -7,6 +7,8 @@ const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const cors = require('cors');
+const { createServer } = require('node:http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 
 const app = require('express')();
@@ -14,12 +16,19 @@ app.use(compression());
 app.use(cookieParser());
 app.use(cors());
 
+//------------ Create HTTP Server ------------//
+const server = require('http').createServer(app);
+
 //------------ Creating Session ------------//
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 
 //------------ Passport Configuration ------------//
 require('./config/passport')(passport);
+
+//------------ Socket.io Configuration ------------//
+const configureSocket = require('./config/socket');
+const io = configureSocket(server);
 
 //------------ DB Configuration ------------//
 const db = require('./config/key').MongoURI;
@@ -29,9 +38,6 @@ mongoose
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
   .then(() => console.log('Successfully connected to MongoDB👌👌👌'))
   .catch((err) => console.log(err));
-
-//------------ Model Configure ------------//
-const Blog = require('./models/Blog');
 
 //------------ EJS Configuration ------------//
 app.use(expressLayouts);
@@ -52,9 +58,6 @@ app.get('/set-cookie', (req, res) => {
 
 //------------ Bodyparser Configuration ------------//
 app.use(express.urlencoded({ extended: true }));
-
-//------------ Create HTTP Server ------------//
-const http = require('http').createServer(app);
 
 //------------ Express session Configuration ------------//
 app.use(
@@ -94,6 +97,9 @@ app.use(function (req, res, next) {
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 
+//------------ Model Configure ------------//
+const Blog = require('./models/Blog');
+
 //------------ Blog API ------------//
 app.get('/blogs', async (req, res) => {
   try {
@@ -106,6 +112,6 @@ app.get('/blogs', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT} || ${process.env.CLIENT_URL}`);
 });

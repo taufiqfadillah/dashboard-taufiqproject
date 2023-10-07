@@ -1,15 +1,21 @@
-//------------ Socket.io Configuration ------------//
-// io.on('connection', (socket) => {
-//   console.log('Successfully connected to Socket.io🫡🫡🫡');
+const { Server } = require('socket.io');
 
-//   socket.on('chat message', (msg) => {
-//     console.log('Received message:', msg);
-//     io.emit('chat message', msg);
-//   });
+function configureSocket(server) {
+  const io = new Server(server);
 
-//   socket.on('disconnect', () => {
-//     console.log('Disconnected to Socket.io😒😒😒');
-//   });
-// });
+  io.on('connection', (socket) => {
+    console.log('Successfully connected to Socket.io⚡⚡⚡');
 
-// module.exports = io;
+    socket.on('disconnect', () => {
+      console.log('Socket.io is not connected');
+    });
+  });
+
+  io.on('reconnect', (socket) => {
+    console.log('Successfully reconnected to Socket.io⚡⚡⚡');
+  });
+
+  return io;
+}
+
+module.exports = configureSocket;

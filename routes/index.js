@@ -1,16 +1,16 @@
 const express = require('express');
-const router = express.Router();
+const { createClient } = require('@supabase/supabase-js');
+const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 const { format } = require('date-fns');
 const compression = require('compression');
 const multer = require('multer');
-const path = require('path');
-const { createClient } = require('@supabase/supabase-js');
 const fileUpload = require('express-fileupload');
-const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 const sharp = require('sharp');
+const sendNotification = require('./notification');
+const router = express.Router();
+const path = require('path');
 const bcrypt = require('bcryptjs');
 const QRCode = require('qrcode');
-const sendNotification = require('./notification');
 
 //------------ App Configure ------------//
 const app = express();
@@ -694,6 +694,8 @@ router.get('/delete-listbarcode/:id', ensureAuthenticated, async (req, res) => {
 
     await Barcode.findByIdAndRemove(id);
 
+    io.emit('barcodeDeleted', { id });
+
     res.redirect('/list-barcode');
   } catch (error) {
     console.error('Error deleting barcode:', error);
@@ -766,7 +768,7 @@ router.post('/add-event', ensureAuthenticated, upload.single('image'), async (re
     });
   } catch (error) {
     console.error('Error creating event:', error);
-    res.status(500).json({ error: 'Terjadi kesalahan saat menambahkan event.' });
+    res.status(500).json({ error: 'Error creating event.' });
   }
 });
 
@@ -781,4 +783,14 @@ router.get('/event-details', ensureAuthenticated, async (req, res) => {
     console.error('Error rendering event page:', error);
   }
 });
+
+// Notification Toasts
+router.get('/notify-toasts', ensureAuthenticated, (req, res) =>
+  res.render('theme/toast-notify', {
+    title: 'Taufiq Project || Notify Toasts',
+    layout: 'partials/layout',
+    user: req.user,
+  })
+);
+
 module.exports = router;
