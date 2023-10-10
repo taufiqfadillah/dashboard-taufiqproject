@@ -597,7 +597,7 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
 //------------ Barcode Route ------------//
 router.get('/barcode', ensureAuthenticated, async (req, res) => {
   try {
-    const { email, name, organization, qrCodeDataURL } = req.query;
+    const { email, name, organization, qrCodeDataURL, scanQrCode } = req.query;
 
     res.render('theme/barcode', {
       title: 'Taufiq Project || Barcode QR',
@@ -607,6 +607,7 @@ router.get('/barcode', ensureAuthenticated, async (req, res) => {
       name,
       organization,
       qrCodeDataURL,
+      scanQrCode,
       success: req.flash('success'),
       error: req.flash('error'),
     });
@@ -621,15 +622,18 @@ router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
   const { email, name, organization } = req.body;
 
   const qrCodeData = `${email}|${name}|${organization}`;
+  const scanQrCode = `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`;
 
   try {
-    const qrCodeDataURL = await generateQRCode(qrCodeData);
+    const qrCodeDataURL = await generateQRCode(scanQrCode);
 
     req.flash('success', 'QR code generated successfully');
 
-    res.redirect(`/barcode?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&organization=${encodeURIComponent(organization)}&qrCodeDataURL=${encodeURIComponent(qrCodeDataURL)}`);
+    res.redirect(
+      `/barcode?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&organization=${encodeURIComponent(organization)}&qrCodeDataURL=${encodeURIComponent(qrCodeDataURL)}&scanQrCode=${encodeURIComponent(scanQrCode)}`
+    );
 
-    console.log('Barcode Link:', `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`);
+    console.log('Barcode Link:', scanQrCode);
   } catch (error) {
     console.error('Error generating QR code:', error);
 
@@ -638,7 +642,7 @@ router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
   }
 });
 
-router.get('/scan-qrcode', async (req, res) => {
+router.get('/scan-qrcode', ensureAuthenticated, async (req, res) => {
   const qrCodeData = req.query.data;
 
   if (!qrCodeData) {
