@@ -11,10 +11,6 @@ function configureSocket(server) {
     });
   });
 
-  io.on('reconnect', (socket) => {
-    console.log('Successfully reconnected to Socket.io⚡⚡⚡');
-  });
-
   return io;
 }
 

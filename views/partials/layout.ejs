@@ -31,7 +31,6 @@
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/vendors/todo.css" />
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/vendors/datatables.css" />
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/vendors/datatable-extension.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css" />
     <!-- Plugins css Ends-->
     <!-- Bootstrap css-->
@@ -50,9 +49,9 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer" />
   </head>
-  <body onload="startTime()">
+  <body>
     <!-- loader starts-->
-    <div class="loader-wrapper">
+    <!-- <div class="loader-wrapper">
       <div class="loader-index"><span></span></div>
       <svg>
         <defs></defs>
@@ -61,7 +60,7 @@
           <fecolormatrix in="blur" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"></fecolormatrix>
         </filter>
       </svg>
-    </div>
+    </div> -->
     <!-- loader ends-->
     <!-- tap on top starts-->
     <div class="tap-top"><i data-feather="chevrons-up"></i></div>
@@ -132,6 +131,46 @@
     <script src="/assets/dashboard/js/form-wizard/verification.js"></script>
     <script src="/assets/dashboard/js/notify/bootstrap-notify.min.js"></script>
     <script src="/assets/dashboard/js/notify/notify-script.js"></script>
+    <script src="/assets/dashboard/js/notify/custom-notify.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      io.on('delete-barcode', (id) => {
+        io.emit('data-deleted', { type: 'barcode', id });
+
+        socket.on('data-deleted', (data) => {
+          if (data.type === 'barcode') {
+            const deletedRow = document.getElementById(`barcode-row-${data.id}`);
+            if (deletedRow) {
+              deletedRow.remove();
+            }
+          }
+        });
+      });
+
+      socket.on('notification', (data) => {
+        if (data.type === 'success') {
+          CustomNotify.success(data.message);
+        } else if (data.type === 'error') {
+          CustomNotify.error(data.message);
+        }
+      });
+    </script>
+    <script>
+      var toastElements = document.querySelectorAll('.toast');
+      toastElements.forEach(function (toastElement) {
+        var toast = new bootstrap.Toast(toastElement, { animation: true });
+        toast.show();
+      });
+
+      setTimeout(function () {
+        toastElements.forEach(function (toastElement) {
+          var toast = bootstrap.Toast.getInstance(toastElement);
+          toast.hide();
+        });
+      }, 4000);
+    </script>
     <!-- Plugins JS Ends-->
     <!-- Datatable Extension -->
     <script src="/assets/dashboard/js/datatable/datatables/jquery.dataTables.min.js"></script>

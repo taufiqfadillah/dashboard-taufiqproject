@@ -1,23 +1,20 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
+const app = express();
 const mongoose = require('mongoose');
+const passport = require('passport');
+const path = require('path');
+const http = require('http');
+const server = http.createServer(app);
 const flash = require('connect-flash');
 const compression = require('compression');
-const passport = require('passport');
 const cookieParser = require('cookie-parser');
-const path = require('path');
 const cors = require('cors');
-const { createServer } = require('node:http');
-const { Server } = require('socket.io');
 require('dotenv').config();
 
-const app = require('express')();
 app.use(compression());
 app.use(cookieParser());
 app.use(cors());
-
-//------------ Create HTTP Server ------------//
-const server = require('http').createServer(app);
 
 //------------ Creating Session ------------//
 const session = require('express-session');
@@ -29,6 +26,7 @@ require('./config/passport')(passport);
 //------------ Socket.io Configuration ------------//
 const configureSocket = require('./config/socket');
 const io = configureSocket(server);
+app.set('io', io);
 
 //------------ DB Configuration ------------//
 const db = require('./config/key').MongoURI;

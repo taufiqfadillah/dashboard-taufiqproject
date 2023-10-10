@@ -1,0 +1,43 @@
+<% if (success.length > 0) { %>
+<div class="toast show bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="toast-header">
+    <strong class="me-auto text-dark">Taufiq Project | Notification Success</strong>
+    <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body text-white"><%= success[0] %></div>
+  <div class="progress" style="height: 8px">
+    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+</div>
+<script>
+  var successToast = document.querySelector('.toast.show.bg-success');
+
+  setTimeout(function () {
+    successToast.classList.remove('show');
+  }, 4000);
+
+  var progressBar = successToast.querySelector('.progress-bar');
+  var progressBarWidth = 0;
+  var animationInterval = setInterval(function () {
+    if (progressBarWidth >= 100) {
+      clearInterval(animationInterval);
+    } else {
+      progressBarWidth++;
+      progressBar.style.width = progressBarWidth + '%';
+    }
+  }, 30);
+</script>
+<% } %> <% if (error.length > 0) { %>
+<div class="toast show bg-danger" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+  <div class="toast-header">
+    <strong class="me-auto text-white">Taufiq Project | Notification Failed</strong>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body text-white">
+    <%= error[0] %>
+    <div class="progress">
+      <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+  </div>
+</div>
+<% } %>

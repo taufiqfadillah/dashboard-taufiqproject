@@ -1,6 +1,5 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
-const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 const { format } = require('date-fns');
 const compression = require('compression');
 const multer = require('multer');
@@ -11,11 +10,13 @@ const router = express.Router();
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const QRCode = require('qrcode');
+const flash = require('connect-flash');
 
 //------------ App Configure ------------//
 const app = express();
 app.use(fileUpload());
 app.use(compression());
+app.use(flash());
 
 //------------ Model Configure ------------//
 const User = require('../models/User');
@@ -33,8 +34,11 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
   },
 });
 
-//------------ Redis Configuration ------------//
+//------------ Config ------------//
 const redisClient = require('../config/redis');
+const io = require('../config/socket');
+app.set('io', io);
+const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
 
 //------------ QR Code Configuration ------------//
 const generateQRCode = async (data) => {
@@ -104,9 +108,12 @@ router.post('/add-post', ensureAuthenticated, upload.single('image'), async (req
 
     sendNotification('Blog Post Added', 'Your new blog post has been successfully added!');
 
+    req.flash('success', 'Successfully added new blog');
     res.redirect('/blog');
   } catch (error) {
     console.error('Error:', error);
+
+    req.flash('error', 'Failed to add new blog');
     res.status(500).render('theme/add-post', { message: 'An error occurred while adding the post.' });
   }
 });
@@ -136,6 +143,8 @@ router.get('/blog', ensureAuthenticated, async (req, res) => {
       layout: 'partials/layout',
       user: req.user,
       blogs: blogs,
+      success: req.flash('success'),
+      error: req.flash('error'),
     });
   } catch (err) {
     console.error(err);
@@ -188,6 +197,8 @@ router.get('/blogs-list', ensureAuthenticated, async (req, res) => {
       layout: 'partials/layout',
       user: req.user,
       blogs: blogs,
+      success: req.flash('success'),
+      error: req.flash('error'),
     });
   } catch (err) {
     console.error(err);
@@ -262,9 +273,12 @@ router.post('/update-blog/:id', ensureAuthenticated, upload.single('image'), asy
 
     sendNotification('Blog Post Updated', 'Your blog post has been updated!');
 
+    req.flash('success', 'Successfully updated post blog');
     res.redirect('/blogs-list');
   } catch (error) {
     console.error(error);
+
+    req.flash('error', 'Failed to update post blog');
     res.status(500).send('Internal Server Error');
   }
 });
@@ -299,9 +313,12 @@ router.post('/delete-blog/:id', ensureAuthenticated, async (req, res) => {
 
     sendNotification('Blog Post Deleted', 'Your blog post has been deleted!');
 
+    req.flash('success', 'Successfully deleted blog');
     res.redirect('/blog');
   } catch (error) {
     console.error(error);
+
+    req.flash('error', 'Failed to delete blog');
     res.status(500).send('Internal Server Error');
   }
 });
@@ -375,10 +392,14 @@ router.post('/edit-profile', ensureAuthenticated, upload.single('image'), async 
 
         if (error) {
           console.error(error);
+
+          req.flash('error', 'Failed to upload image, Please Try Again Later.');
           return res.status(500).send('Failed to upload image, Please Try Again Later.');
         }
       } catch (uploadError) {
         console.error(uploadError);
+
+        req.flash('error', 'Failed to upload image, Please Try Again Later.');
         return res.status(500).send('Failed to upload image, Please Try Again Later.');
       }
     }
@@ -406,9 +427,13 @@ router.post('/edit-profile', ensureAuthenticated, upload.single('image'), async 
     );
 
     sendNotification('Edit Profile', 'Your profile has been successfully updated!');
+
+    req.flash('success', 'Successfully updated profile');
     res.redirect('/user-profile');
   } catch (error) {
     console.error(error);
+
+    req.flash('error', 'Failed updated profile');
     res.status(500).send('Internal Server Error');
   }
 });
@@ -419,6 +444,8 @@ router.get('/user-profile', ensureAuthenticated, (req, res) =>
     title: 'Taufiq Project || My Profile',
     layout: 'partials/layout',
     user: req.user,
+    success: req.flash('success'),
+    error: req.flash('error'),
   })
 );
 
@@ -455,6 +482,7 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
 
       sendNotification('Change Password', 'Your account has been successfully changed password!');
 
+      req.flash('success', 'Successfully to change password');
       res.redirect('/user-profile');
     } else {
       const { currentPassword } = req.body;
@@ -468,10 +496,13 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
 
       sendNotification('Change Password', 'Your account has been successfully changed password!');
 
+      req.flash('success', 'Successfully to change password');
       res.redirect('/user-profile');
     }
   } catch (error) {
     console.error(error);
+
+    req.flash('error', 'Failed to change password');
     res.status(500).send('Internal Server Error');
   }
 });
@@ -564,16 +595,23 @@ router.post('/delete-task/:id', ensureAuthenticated, async (req, res) => {
 //------------ Barcode Route ------------//
 router.get('/barcode', ensureAuthenticated, async (req, res) => {
   try {
-    const qrCodeDataURL = '';
+    const { email, name, organization, qrCodeDataURL } = req.query;
 
     res.render('theme/barcode', {
       title: 'Taufiq Project || Barcode QR',
       layout: 'partials/layout',
       user: req.user,
+      email,
+      name,
+      organization,
       qrCodeDataURL,
+      success: req.flash('success'),
+      error: req.flash('error'),
     });
   } catch (error) {
     console.error('Error rendering barcode page:', error);
+
+    res.status(500).send('Error rendering barcode page');
   }
 });
 
@@ -585,21 +623,16 @@ router.post('/generate-qrcode', ensureAuthenticated, async (req, res) => {
   try {
     const qrCodeDataURL = await generateQRCode(qrCodeData);
 
-    res.render('theme/generate', {
-      title: 'Taufiq Project || Generate Barcode QR',
-      layout: 'partials/layout',
-      user: req.user,
-      qrCodeDataURL,
-      downloadFileName: `QR-${name}.png`,
-      name,
-      email,
-      organization,
-      qrCodeData,
-    });
+    req.flash('success', 'QR code generated successfully');
+
+    res.redirect(`/barcode?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&organization=${encodeURIComponent(organization)}&qrCodeDataURL=${encodeURIComponent(qrCodeDataURL)}`);
 
     console.log('Barcode Link:', `${process.env.CLIENT_URL}/scan-qrcode?data=${encodeURIComponent(email)}|${encodeURIComponent(name)}|${encodeURIComponent(organization)}`);
   } catch (error) {
     console.error('Error generating QR code:', error);
+
+    req.flash('error', 'Error generating QR code');
+    res.redirect(`/barcode?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&organization=${encodeURIComponent(organization)}&notification=error`);
   }
 });
 
@@ -628,9 +661,16 @@ router.get('/scan-qrcode', async (req, res) => {
     const barcodeData = new Barcode({ email, name, organization, date: currentDate, barcode: imageName });
     await barcodeData.save();
 
+    const io = req.app.get('io');
+    io.emit('notification', { type: 'success', message: 'Successfully to saving data barcode.' });
+
     res.render('theme/success', { name });
   } catch (error) {
     console.error('Error saving data to MongoDB:', error);
+
+    const io = req.app.get('io');
+    io.emit('notification', { type: 'error', message: 'Failed to saving data barcode.' });
+
     res.status(500).json({ error: 'Error saving data to MongoDB.' });
   }
 });
@@ -655,6 +695,8 @@ router.get('/list-barcode', ensureAuthenticated, async (req, res) => {
       user: req.user,
       barcodes,
       downloadLinks,
+      success: req.flash('success'),
+      error: req.flash('error'),
     });
   } catch (error) {
     console.error('Error rendering barcode page:', error);
@@ -668,14 +710,17 @@ router.post('/edit-listbarcode/:id', ensureAuthenticated, async (req, res) => {
 
     await Barcode.findByIdAndUpdate(id, { name, email, organization });
 
+    req.flash('success', 'Barcode data has been updated successfully');
     res.redirect('/list-barcode');
   } catch (error) {
     console.error('Error editing barcode:', error);
+
+    req.flash('error', 'Failed to update barcode data');
     res.status(500).json({ error: 'Error deleting barcode.' });
   }
 });
 
-router.get('/delete-listbarcode/:id', ensureAuthenticated, async (req, res) => {
+router.delete('/delete-listbarcode/:id', ensureAuthenticated, async (req, res) => {
   try {
     const id = req.params.id;
     const barcode = await Barcode.findById(id);
@@ -694,9 +739,9 @@ router.get('/delete-listbarcode/:id', ensureAuthenticated, async (req, res) => {
 
     await Barcode.findByIdAndRemove(id);
 
-    io.emit('barcodeDeleted', { id });
+    req.app.get('io').emit('delete-barcode', id);
 
-    res.redirect('/list-barcode');
+    res.json({ success: true });
   } catch (error) {
     console.error('Error deleting barcode:', error);
     res.status(500).json({ error: 'Error deleting barcode.' });

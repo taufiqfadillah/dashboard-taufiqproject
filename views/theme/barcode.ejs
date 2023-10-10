@@ -1,5 +1,6 @@
 <div class="page-body">
   <div class="container-fluid">
+    <div class="position-fixed bottom-0 end-0 p-3 toast-index toast-rtl"><%- include('message') %></div>
     <div class="page-title">
       <div class="row">
         <div class="col-6">
@@ -23,7 +24,7 @@
   <!-- Container-fluid starts-->
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-10">
+      <div class="col-md-8">
         <div class="card">
           <div class="card-header">
             <h4>Barcode QR Generator</h4>
@@ -53,6 +54,30 @@
                   <button class="btn btn-primary" type="submit">Generate</button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card social-profile">
+          <div class="card-header">
+            <h4>Scan Here</h4>
+          </div>
+          <div class="card-body">
+            <div class="social-details">
+              <h5 class="mb-1"><a href="#"><%= name %></a></h5>
+              <span class="f-light mb-1"><%= email %></span><br />
+              <span class="f-light mb-2"><%= organization %></span>
+              <div class="card-wrapper border rounded-3">
+                <img src="<%= qrCodeDataURL ? qrCodeDataURL : 'assets/dashboard/images/dashboard/scan-qr.webp' %>" style="width: 164px; height: auto" alt="QR Code" />
+              </div>
+              <div class="mt-4">
+                <% if (qrCodeDataURL) { %>
+                <a href="<%= qrCodeDataURL %>" download="QRCode-<%= name %>.png" class="btn btn-primary">Download</a>
+                <% } else { %>
+                <button class="btn btn-primary" disabled>Download</button>
+                <% } %>
+              </div>
             </div>
           </div>
         </div>

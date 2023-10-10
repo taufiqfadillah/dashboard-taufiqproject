@@ -1,8 +1,0 @@
-<div id="toast-container" class="toast-bottom-right">
-  <% if (messages && messages.length > 0) { %> <% messages.forEach(message => { %>
-  <div class="toast <%= message.type %>">
-    <button class="toast-close-button" data-dismiss="toast">×</button>
-    <div class="toast-message"><%= message.text %></div>
-  </div>
-  <% }); %> <% } %>
-</div>

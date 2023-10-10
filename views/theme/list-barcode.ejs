@@ -1,5 +1,6 @@
 <div class="page-body">
   <div class="container-fluid">
+    <div class="position-fixed bottom-0 end-0 p-3 toast-index toast-rtl"><%- include('message') %></div>
     <div class="page-title">
       <div class="row">
         <div class="col-6">
@@ -8,7 +9,7 @@
         <div class="col-6">
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
-              <a href="index.html">
+              <a href="/">
                 <svg class="stroke-icon">
                   <use href="/assets/dashboard/svg/icon-sprite.svg#stroke-home"></use></svg
               ></a>
@@ -30,6 +31,7 @@
           </div>
           <div class="card-body">
             <div class="dt-ext table-responsive">
+              <a class="btn btn-danger mb-3" href="/barcode">Create Barcode</a>
               <table class="display" id="export-button">
                 <thead>
                   <tr>
@@ -44,7 +46,7 @@
                 </thead>
                 <tbody>
                   <% var count = 1; %> <% barcodes.forEach(function(barcode, index) { %>
-                  <tr>
+                  <tr id="barcode-row-<%= barcode._id %>">
                     <td><%= count %></td>
                     <td><%= barcode.name %></td>
                     <td><%= barcode.email %></td>
@@ -74,7 +76,32 @@
                               cancelButtonText: 'No',
                             }).then((result) => {
                               if (result.isConfirmed) {
-                                window.location.href = `/delete-listbarcode/${id}`;
+                                fetch(`/delete-listbarcode/${id}`, {
+                                  method: 'DELETE',
+                                })
+                                  .then((response) => response.json())
+                                  .then((data) => {
+                                    if (data.success) {
+                                      const deletedRow = document.getElementById(`barcode-row-${id}`);
+                                      if (deletedRow) {
+                                        deletedRow.remove();
+                                      }
+                                      CustomNotify.success('Delete data has been success');
+                                    } else {
+                                      Swal.fire({
+                                        title: 'Error',
+                                        text: 'Failed to delete data.',
+                                        icon: 'error',
+                                      });
+                                    }
+                                  })
+                                  .catch((error) => {
+                                    Swal.fire({
+                                      title: 'Error',
+                                      text: 'Failed to delete data.',
+                                      icon: 'error',
+                                    });
+                                  });
                               }
                             });
                           }
