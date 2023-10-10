@@ -6,11 +6,11 @@ const multer = require('multer');
 const fileUpload = require('express-fileupload');
 const sharp = require('sharp');
 const sendNotification = require('./notification');
+const flash = require('connect-flash');
 const router = express.Router();
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const QRCode = require('qrcode');
-const flash = require('connect-flash');
 
 //------------ App Configure ------------//
 const app = express();
@@ -828,14 +828,5 @@ router.get('/event-details', ensureAuthenticated, async (req, res) => {
     console.error('Error rendering event page:', error);
   }
 });
-
-// Notification Toasts
-router.get('/notify-toasts', ensureAuthenticated, (req, res) =>
-  res.render('theme/toast-notify', {
-    title: 'Taufiq Project || Notify Toasts',
-    layout: 'partials/layout',
-    user: req.user,
-  })
-);
 
 module.exports = router;
