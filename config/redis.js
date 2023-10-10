@@ -7,6 +7,7 @@ const redisConfig = {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
   },
+  maxclients: 100,
 };
 
 const redisClient = createClient(redisConfig);

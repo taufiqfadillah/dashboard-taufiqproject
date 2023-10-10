@@ -68,8 +68,10 @@
               <h5 class="mb-1"><a href="#"><%= name %></a></h5>
               <span class="f-light mb-1"><%= email %></span><br />
               <span class="f-light mb-2"><%= organization %></span>
-              <div class="card-wrapper border rounded-3">
-                <img src="<%= qrCodeDataURL ? qrCodeDataURL : 'assets/dashboard/images/dashboard/scan-qr.webp' %>" style="width: 164px; height: auto" alt="QR Code" />
+              <div class="card-wrapper">
+                <div class="border rounded-3" style="display: inline-block">
+                  <img src="<%= qrCodeDataURL ? qrCodeDataURL : 'assets/dashboard/images/dashboard/scan-qr.webp' %>" style="width: 164px; height: auto" alt="QR Code" />
+                </div>
               </div>
               <div class="mt-4">
                 <% if (qrCodeDataURL) { %>

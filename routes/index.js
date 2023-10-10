@@ -36,6 +36,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
 
 //------------ Config ------------//
 const redisClient = require('../config/redis');
+redisClient.set('myKey', 'myValue', 'EX', 3600);
+
 const io = require('../config/socket');
 app.set('io', io);
 const { ensureAuthenticated, blockAccessToRoot } = require('../config/checkAuth');
