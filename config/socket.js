@@ -1,7 +1,9 @@
 const { Server } = require('socket.io');
 
 function configureSocket(server) {
-  const io = new Server(server);
+  const io = new Server(server, {
+    pingTimeout: 60000,
+  });
 
   io.on('connection', (socket) => {
     console.log('Successfully connected to Socket.io⚡⚡⚡');

@@ -132,6 +132,8 @@ router.get('/blog', ensureAuthenticated, async (req, res) => {
         title: 'Taufiq Project || My Blog',
         layout: 'partials/layout',
         user: req.user,
+        success: req.flash('success'),
+        error: req.flash('error'),
         blogs: JSON.parse(cachedData),
       });
     }
@@ -184,6 +186,8 @@ router.get('/blogs-list', ensureAuthenticated, async (req, res) => {
         title: 'Taufiq Project || Blogs List',
         layout: 'partials/layout',
         user: req.user,
+        success: req.flash('success'),
+        error: req.flash('error'),
         blogs: JSON.parse(cachedBlogs),
       });
     }
